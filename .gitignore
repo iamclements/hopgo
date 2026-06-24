@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+
+# Cloudflare / Wrangler
+.wrangler/
+
+# Secrets - never commit
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Local-only project docs (not tracked)
+CLAUDE.md
+KICKOFF.md
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.log

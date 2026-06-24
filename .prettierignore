@@ -1,0 +1,8 @@
+**/dist/**
+**/node_modules/**
+**/.wrangler/**
+**/coverage/**
+pnpm-lock.yaml
+
+# Authored verbatim, keep its original wrapping/formatting.
+CLAUDE.md

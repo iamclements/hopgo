@@ -35,7 +35,7 @@ hopgo/
 
 ## Development
 
-Requires Node 20+ and pnpm. This is a pnpm workspace monorepo.
+Requires Node 22.13+ and pnpm. This is a pnpm workspace monorepo.
 
 ```bash
 pnpm install            # install all workspace deps

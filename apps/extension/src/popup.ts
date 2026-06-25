@@ -1,10 +1,18 @@
-import { shorten } from "./api.js";
-import { addRecent, getRecent, getSettings } from "./storage.js";
-import type { RecentLink } from "./util.js";
+import {
+  DEFAULT_TENANT_ID,
+  generateUniqueSlug,
+  linkExists,
+  putLink,
+  type Link,
+} from "@hopgo/shared";
+import { clientFor, connect, currentConnection } from "./session.js";
+import { addRecent, getRecent, getShortDomain } from "./storage.js";
+import { buildShortUrl, type RecentLink } from "./util.js";
 
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 
 const currentEl = $<HTMLDivElement>("current");
+const connectBtn = $<HTMLButtonElement>("connect");
 const shortenBtn = $<HTMLButtonElement>("shorten");
 const msgEl = $<HTMLDivElement>("msg");
 const resultEl = $<HTMLDivElement>("result");
@@ -15,6 +23,10 @@ const recentEl = $<HTMLUListElement>("recent");
 function setMsg(text: string, isError = false): void {
   msgEl.textContent = text;
   msgEl.className = isError ? "msg error" : "msg";
+}
+
+function show(el: HTMLElement, visible: boolean): void {
+  el.classList.toggle("hidden", !visible);
 }
 
 async function currentTabUrl(): Promise<string | undefined> {
@@ -41,36 +53,86 @@ async function copy(text: string): Promise<void> {
   setMsg(`Copied ${text}`);
 }
 
-async function run(): Promise<void> {
-  const url = await currentTabUrl();
-  currentEl.textContent = url ?? "No active tab";
-  renderRecent(await getRecent());
+async function shorten(url: string): Promise<void> {
+  const connection = await currentConnection();
+  if (!connection) {
+    setMsg("Sign in with Cloudflare first.", true);
+    return;
+  }
+  const shortDomain = await getShortDomain();
+  if (!shortDomain) {
+    setMsg("Set your short-link domain in Settings first.", true);
+    return;
+  }
 
-  shortenBtn.addEventListener("click", async () => {
-    if (!url) return;
-    shortenBtn.disabled = true;
-    setMsg("Shortening...");
-    try {
-      const settings = await getSettings();
-      const { link, shortUrl } = await shorten(settings, url);
-      shortEl.textContent = shortUrl;
-      resultEl.style.display = "flex";
-      await copy(shortUrl);
-      renderRecent(await addRecent({ slug: link.slug, url, shortUrl, createdAt: link.createdAt }));
-    } catch (err) {
-      setMsg(err instanceof Error ? err.message : "Failed to shorten", true);
-    } finally {
-      shortenBtn.disabled = false;
-    }
-  });
+  shortenBtn.disabled = true;
+  setMsg("Shortening...");
+  try {
+    const client = clientFor(connection);
+    const slug = await generateUniqueSlug((candidate) => linkExists(client, candidate));
+    const link: Link = {
+      slug,
+      url,
+      tenantId: DEFAULT_TENANT_ID,
+      createdAt: new Date().toISOString(),
+    };
+    await putLink(client, link);
 
-  copyBtn.addEventListener("click", () => {
-    if (shortEl.textContent) void copy(shortEl.textContent);
-  });
-
-  $<HTMLButtonElement>("settings").addEventListener("click", () => {
-    chrome.runtime.openOptionsPage();
-  });
+    const shortUrl = buildShortUrl(shortDomain, slug);
+    shortEl.textContent = shortUrl;
+    show(resultEl, true);
+    await copy(shortUrl);
+    renderRecent(await addRecent({ slug, url, shortUrl, createdAt: link.createdAt }));
+  } catch (err) {
+    setMsg(err instanceof Error ? err.message : "Failed to shorten", true);
+  } finally {
+    shortenBtn.disabled = false;
+  }
 }
 
-void run();
+async function render(): Promise<void> {
+  const connection = await currentConnection();
+  const connected = connection !== null;
+  show(connectBtn, !connected);
+  show(shortenBtn, connected);
+
+  const url = await currentTabUrl();
+  currentEl.textContent = url ?? "No active tab";
+
+  if (connected) {
+    renderRecent(await getRecent());
+    if (!(await getShortDomain())) {
+      setMsg("Set your short-link domain in Settings.", true);
+    }
+  } else {
+    setMsg("Sign in with Cloudflare to start shortening.");
+  }
+
+  shortenBtn.onclick = () => {
+    if (url) void shorten(url);
+  };
+}
+
+connectBtn.addEventListener("click", async () => {
+  connectBtn.disabled = true;
+  setMsg("Opening Cloudflare sign-in...");
+  try {
+    await connect();
+    setMsg("Connected.");
+    await render();
+  } catch (err) {
+    setMsg(err instanceof Error ? err.message : "Sign-in failed", true);
+  } finally {
+    connectBtn.disabled = false;
+  }
+});
+
+copyBtn.addEventListener("click", () => {
+  if (shortEl.textContent) void copy(shortEl.textContent);
+});
+
+$<HTMLButtonElement>("settings").addEventListener("click", () => {
+  chrome.runtime.openOptionsPage();
+});
+
+void render();

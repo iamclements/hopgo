@@ -39,6 +39,10 @@
         color: #2563eb;
         padding: 0;
       }
+      button.secondary {
+        background: #8883;
+        color: inherit;
+      }
       .row {
         display: flex;
         gap: 8px;
@@ -54,7 +58,7 @@
         color: #dc2626;
       }
       .result {
-        display: none;
+        display: flex;
         gap: 6px;
         align-items: center;
         margin-bottom: 8px;
@@ -85,6 +89,9 @@
         opacity: 0.6;
         margin-top: 12px;
       }
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -93,9 +100,12 @@
       <button class="link" id="settings">Settings</button>
     </div>
     <div class="url" id="current">Reading current tab...</div>
-    <button id="shorten">Shorten this tab</button>
+    <button id="connect">Sign in with Cloudflare</button>
+    <button id="shorten" class="hidden">Shorten this tab</button>
     <div class="msg" id="msg"></div>
-    <div class="result" id="result"><code id="short"></code><button id="copy">Copy</button></div>
+    <div class="result hidden" id="result">
+      <code id="short"></code><button class="secondary" id="copy">Copy</button>
+    </div>
     <div class="recent-title">Recent</div>
     <ul id="recent"></ul>
     <script type="module" src="/src/popup.ts"></script>

@@ -29,6 +29,13 @@ export {
   type ListLinksResult,
 } from "./links.js";
 export {
+  listAccounts,
+  discoverAccountId,
+  ensureNamespace,
+  DEFAULT_NAMESPACE_TITLE,
+  type CloudflareAccount,
+} from "./discovery.js";
+export {
   buildAuthorizeUrl,
   createPkcePair,
   exchangeCode,

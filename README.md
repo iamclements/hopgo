@@ -122,10 +122,25 @@ pnpm --filter @hopgo/control-plane test    # Vitest against an in-memory KV
 | `GET`    | `/api/links/:slug`        | -                                  | the link plus its `clicks` count, or `404`         |
 | `DELETE` | `/api/links/:slug`        | -                                  | `204`, or `404` if unknown                         |
 
+## Chrome extension
+
+The MV3 extension in [apps/extension](apps/extension) shortens the current tab in one click, copies
+the short URL to the clipboard, and keeps a list of recent links. It talks to your control-plane
+API, so set that URL in the extension options first.
+
+```bash
+pnpm --filter @hopgo/extension build   # outputs apps/extension/dist
+pnpm --filter @hopgo/extension dev      # rebuild on change (vite build --watch)
+```
+
+Load it: open `chrome://extensions`, enable Developer mode, choose "Load unpacked," and pick
+`apps/extension/dist`. Open the extension options, set the control-plane API URL (e.g.
+`http://localhost:8787`) and an optional bearer token, then approve the host-access prompt.
+
 ## Roadmap
 
 Early development. Each item below is one PR. Done: scaffold, worker redirect, shared CF client,
-control-plane API, control-plane portal.
+control-plane API, control-plane portal, extension.
 
 1. `chore/scaffold` - pnpm monorepo, four packages, CLAUDE.md, README, MIT LICENSE, .env.example,
    ESLint/Prettier/tsconfig, CI (lint + typecheck + test).

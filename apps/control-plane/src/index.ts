@@ -9,7 +9,11 @@ import { loadConfig } from "./config.js";
  * a Cloudflare Tunnel + Access in front rather than opening a port.
  */
 const config = loadConfig();
-const app = createApp({ client: config.client, tenantId: config.tenantId });
+const app = createApp({
+  client: config.client,
+  tenantId: config.tenantId,
+  publicBaseUrl: config.publicBaseUrl,
+});
 
 serve({ fetch: app.fetch, hostname: config.host, port: config.port }, (info) => {
   console.log(`Hopgo control plane listening on http://${config.host}:${info.port}`);

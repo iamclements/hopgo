@@ -12,11 +12,14 @@ import {
   type Link,
 } from "@hopgo/shared";
 import { Hono } from "hono";
+import { PORTAL_HTML } from "./portal.js";
 
 export interface AppDeps {
   client: CloudflareKvClient;
   /** Tenant stamped onto every created link. "local" for the homelab build. */
   tenantId: string;
+  /** Public origin where redirects are served, e.g. https://hopgo.co. */
+  publicBaseUrl: string;
 }
 
 interface CreateLinkBody {
@@ -39,7 +42,7 @@ function isValidUrl(value: string): boolean {
  * process holds no link state of its own and can be wiped at any time.
  */
 export function createApp(deps: AppDeps) {
-  const { client, tenantId } = deps;
+  const { client, tenantId, publicBaseUrl } = deps;
   const app = new Hono();
 
   // Surface upstream Cloudflare failures as 502 rather than a bare 500.
@@ -53,12 +56,23 @@ export function createApp(deps: AppDeps) {
 
   app.get("/health", (c) => c.json({ status: "ok" }));
 
-  // List links (one page). Click counters are excluded; fetch a single link for its count.
+  // Minimal web portal (served by the same container) and the config it reads.
+  app.get("/", (c) => c.html(PORTAL_HTML));
+  app.get("/api/config", (c) => c.json({ publicBaseUrl, tenantId }));
+
+  // List links (one page). Pass ?withClicks=1 to include each link's click count.
   app.get("/api/links", async (c) => {
     const cursor = c.req.query("cursor");
     const limitRaw = c.req.query("limit");
     const limit = limitRaw ? Number.parseInt(limitRaw, 10) : undefined;
     const result = await listLinks(client, { cursor, limit });
+
+    if (c.req.query("withClicks")) {
+      const links = await Promise.all(
+        result.links.map(async (link) => ({ ...link, clicks: await getClicks(client, link.slug) })),
+      );
+      return c.json({ links, cursor: result.cursor });
+    }
     return c.json(result);
   });
 

@@ -18,7 +18,7 @@ function makeApp() {
     keys: [...store.keys()].map((name) => ({ name })),
     listComplete: true,
   }));
-  return createApp({ client, tenantId: "local" });
+  return createApp({ client, tenantId: "local", publicBaseUrl: "https://hopgo.co" });
 }
 
 function postLink(app: ReturnType<typeof createApp>, payload: unknown) {
@@ -128,5 +128,30 @@ describe("GET /health", () => {
     const res = await makeApp().request("/health");
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ status: "ok" });
+  });
+});
+
+describe("portal", () => {
+  it("serves the HTML page at the root", async () => {
+    const res = await makeApp().request("/");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/html");
+    expect(await res.text()).toContain("<title>Hopgo</title>");
+  });
+
+  it("exposes the public base url via /api/config", async () => {
+    const res = await makeApp().request("/api/config");
+    expect(await res.json()).toEqual({ publicBaseUrl: "https://hopgo.co", tenantId: "local" });
+  });
+
+  it("includes click counts when withClicks is set", async () => {
+    const app = makeApp();
+    await postLink(app, { url: "https://example.com", slug: "gh" });
+    store.set("clicks:gh", "7");
+
+    const res = await app.request("/api/links?withClicks=1");
+    const body = (await res.json()) as { links: Array<Link & { clicks: number }> };
+
+    expect(body.links[0]!.clicks).toBe(7);
   });
 });

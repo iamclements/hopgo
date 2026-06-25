@@ -79,6 +79,10 @@ links in Cloudflare KV via the scoped token. It holds no state of its own. Wipe 
 redeploy it, lose zero links. Bind it to LAN only; for remote admin put a Cloudflare Tunnel +
 Access in front rather than opening a port.
 
+It also serves a minimal web portal at `/`: list links with click counts, create (auto or custom
+slug), copy the short URL, and delete. The portal is plain HTML/JS served by the same process, so
+there is no separate frontend to build or host. Open `http://<host>:8787/` on your LAN.
+
 ### Run with Docker
 
 ```bash
@@ -97,15 +101,16 @@ pnpm --filter @hopgo/control-plane test    # Vitest against an in-memory KV
 
 ### Environment variables
 
-| Variable             | Required | Default     | Purpose                                                                      |
-| -------------------- | -------- | ----------- | ---------------------------------------------------------------------------- |
-| `CF_API_TOKEN`       | yes      | -           | Scoped Cloudflare token (Workers KV Storage edit). Never the Global API Key. |
-| `CF_ACCOUNT_ID`      | yes      | -           | Account that owns the KV namespace.                                          |
-| `CF_KV_NAMESPACE_ID` | yes      | -           | KV namespace id holding the links.                                           |
-| `HOPGO_TENANT_ID`    | no       | `local`     | Tenant stamped onto created links.                                           |
-| `HOST`               | no       | `127.0.0.1` | Bind address. Compose sets `0.0.0.0` inside the container and maps to LAN.   |
-| `PORT`               | no       | `8787`      | Listen port.                                                                 |
-| `PUID` / `PGID`      | no       | `1000`      | Host user/group ids the container drops to (Docker only).                    |
+| Variable                | Required | Default            | Purpose                                                                      |
+| ----------------------- | -------- | ------------------ | ---------------------------------------------------------------------------- |
+| `CF_API_TOKEN`          | yes      | -                  | Scoped Cloudflare token (Workers KV Storage edit). Never the Global API Key. |
+| `CF_ACCOUNT_ID`         | yes      | -                  | Account that owns the KV namespace.                                          |
+| `CF_KV_NAMESPACE_ID`    | yes      | -                  | KV namespace id holding the links.                                           |
+| `HOPGO_TENANT_ID`       | no       | `local`            | Tenant stamped onto created links.                                           |
+| `HOPGO_PUBLIC_BASE_URL` | no       | `https://hopgo.co` | Origin the portal uses to build copyable short links.                        |
+| `HOST`                  | no       | `127.0.0.1`        | Bind address. Compose sets `0.0.0.0` inside the container and maps to LAN.   |
+| `PORT`                  | no       | `8787`             | Listen port.                                                                 |
+| `PUID` / `PGID`         | no       | `1000`             | Host user/group ids the container drops to (Docker only).                    |
 
 ### API
 
@@ -120,7 +125,7 @@ pnpm --filter @hopgo/control-plane test    # Vitest against an in-memory KV
 ## Roadmap
 
 Early development. Each item below is one PR. Done: scaffold, worker redirect, shared CF client,
-control-plane API.
+control-plane API, control-plane portal.
 
 1. `chore/scaffold` - pnpm monorepo, four packages, CLAUDE.md, README, MIT LICENSE, .env.example,
    ESLint/Prettier/tsconfig, CI (lint + typecheck + test).

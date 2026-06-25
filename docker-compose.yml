@@ -23,6 +23,7 @@ services:
       - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
       - CF_KV_NAMESPACE_ID=${CF_KV_NAMESPACE_ID}
       - HOPGO_TENANT_ID=${HOPGO_TENANT_ID:-local}
+      - HOPGO_PUBLIC_BASE_URL=${HOPGO_PUBLIC_BASE_URL:-https://hopgo.co}
       - HOST=0.0.0.0
       - PORT=8787
     env_file:

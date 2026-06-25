@@ -56,12 +56,28 @@ pnpm test               # Vitest per package
 
 See [.env.example](.env.example) for the full list of variables.
 
+## Worker (the data plane)
+
+The edge redirect lives in [apps/worker](apps/worker). `GET /:slug` looks the slug up in KV and
+302s to the target; an unknown slug returns a 404; clicks are counted async via `waitUntil`, off
+the response path.
+
+```bash
+pnpm --filter @hopgo/worker dev      # local dev on Miniflare (workers.dev preview)
+pnpm --filter @hopgo/worker test     # Vitest on the real Workers runtime
+pnpm --filter @hopgo/worker deploy   # publish + attach the hopgo.co/* route
+```
+
+Before deploying, set the KV namespace id in [apps/worker/wrangler.jsonc](apps/worker/wrangler.jsonc)
+(the `LINKS` binding). Create the namespace with `wrangler kv namespace create hopgo-links`. The
+`hopgo.co/*` route is declared there too and binds on deploy.
+
 ## Roadmap
 
-Early development. This repo currently contains the scaffold (PR #1). Each item below is one PR.
+Early development. Each item below is one PR. Done: scaffold, worker redirect.
 
 1. `chore/scaffold` - pnpm monorepo, four packages, CLAUDE.md, README, MIT LICENSE, .env.example,
-   ESLint/Prettier/tsconfig, CI (lint + typecheck + test). **(this PR)**
+   ESLint/Prettier/tsconfig, CI (lint + typecheck + test).
 2. `feat/worker-redirect` - Worker: KV-backed `GET /:slug` -> 302, 404 fallback, async click
    counter. Miniflare tests. Wrangler config with the `hopgo.co/*` route.
 3. `feat/shared-cf-client` - typed Cloudflare API client (KV read/write/list, scoped-token auth),

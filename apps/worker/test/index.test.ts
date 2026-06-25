@@ -52,11 +52,12 @@ describe("worker redirect", () => {
     expect(await env.LINKS.get("clicks:missing")).toBeNull();
   });
 
-  it("serves a landing response at the apex root", async () => {
+  it("serves the HTML landing page at the apex root", async () => {
     const res = await dispatch("/");
 
     expect(res.status).toBe(200);
-    expect(await res.text()).toContain("Hopgo");
+    expect(res.headers.get("content-type")).toContain("text/html");
+    expect(await res.text()).toContain("<h1>Hopgo</h1>");
   });
 
   it("rejects non-GET methods", async () => {

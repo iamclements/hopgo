@@ -7,6 +7,8 @@
  * response is sent via `ctx.waitUntil`, so counting never delays the redirect.
  */
 
+import { LANDING_HTML } from "./landing.js";
+
 /** Shape of a link record stored in KV under its slug. Kept tenant-aware from day one. */
 export interface StoredLink {
   url: string;
@@ -23,9 +25,9 @@ function clickKey(slug: string): string {
 const RESERVED_PATHS = new Set(["", "favicon.ico", "robots.txt"]);
 
 function landingResponse(): Response {
-  return new Response("Hopgo: this domain serves short links. Unknown or missing slug.\n", {
+  return new Response(LANDING_HTML, {
     status: 200,
-    headers: { "content-type": "text/plain; charset=utf-8" },
+    headers: { "content-type": "text/html; charset=utf-8" },
   });
 }
 

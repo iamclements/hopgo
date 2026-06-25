@@ -60,7 +60,7 @@ See [.env.example](.env.example) for the full list of variables.
 
 The edge redirect lives in [apps/worker](apps/worker). `GET /:slug` looks the slug up in KV and
 302s to the target; an unknown slug returns a 404; clicks are counted async via `waitUntil`, off
-the response path.
+the response path. The apex root (`/`) serves a small branded landing page.
 
 ```bash
 pnpm --filter @hopgo/worker dev      # local dev on Miniflare (workers.dev preview)
@@ -150,10 +150,25 @@ Load it: open `chrome://extensions`, enable Developer mode, choose "Load unpacke
 `apps/extension/dist`. Open the extension options, set the control-plane API URL (e.g.
 `http://localhost:8787`) and an optional bearer token, then approve the host-access prompt.
 
+## Security
+
+- Use a **scoped** Cloudflare API token (Workers KV Storage edit on one account). Never the Global
+  API Key. A leaked scoped token can edit KV; it cannot touch the rest of your account.
+- The token lives in `.env` (or your secrets manager) and is read into the container at runtime. It
+  is never committed and never logged. `.env` is gitignored; only `.env.example` is tracked.
+- Bind the control plane to LAN (`127.0.0.1` by default). It has no built-in auth, so do not expose
+  the port to the internet. For remote admin use a **Cloudflare Tunnel + Access** in front: zero
+  open ports, identity-gated.
+- Redirects never depend on the container. Even if the control plane is fully compromised and wiped,
+  the worker keeps serving from KV, and rotating the token cuts off further writes.
+- The extension stores its token in `chrome.storage.local` and requests host access only for the API
+  origin you configure. Prefer routing through the control plane over giving the extension a CF token.
+- Run `doctor` after setup to confirm the token is scoped and active.
+
 ## Roadmap
 
-Early development. Each item below is one PR. Done: scaffold, worker redirect, shared CF client,
-control-plane API, control-plane portal, extension, doctor.
+Each item is one PR. All shipped: scaffold, worker redirect, shared CF client, control-plane API,
+control-plane portal, extension, doctor, docs + landing page.
 
 1. `chore/scaffold` - pnpm monorepo, four packages, CLAUDE.md, README, MIT LICENSE, .env.example,
    ESLint/Prettier/tsconfig, CI (lint + typecheck + test).

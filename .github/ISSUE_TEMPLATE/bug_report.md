@@ -19,7 +19,6 @@ Steps to reproduce
 
 Environment
 
-- Component: worker / control-plane / extension / shared
+- Component: worker / web app / extension / shared
 - Hopgo version or commit:
-- Deploy: Docker / local / wrangler
-- Output of `docker compose run --rm control-plane node dist/doctor.js` (redact secrets):
+- Browser + OS:

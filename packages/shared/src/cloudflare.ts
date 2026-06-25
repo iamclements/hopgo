@@ -88,7 +88,8 @@ export class CloudflareKvClient {
     this.accountId = config.accountId;
     this.namespaceId = config.namespaceId;
     this.baseUrl = config.baseUrl ?? DEFAULT_BASE_URL;
-    this.fetchImpl = config.fetch ?? globalThis.fetch;
+    // Bind so native fetch is not invoked with the wrong `this` (Illegal invocation).
+    this.fetchImpl = config.fetch ?? globalThis.fetch.bind(globalThis);
   }
 
   private namespacePath(suffix: string): string {

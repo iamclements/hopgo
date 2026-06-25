@@ -1,5 +1,4 @@
 import type { CloudflareZone } from "@hopgo/shared";
-import { redirectUrl } from "./cf-oauth.js";
 import { loadZones, provisionZone } from "./setup.js";
 import { getShortDomain, setShortDomain } from "./storage.js";
 import { normalizeBaseUrl } from "./util.js";
@@ -7,8 +6,8 @@ import { normalizeBaseUrl } from "./util.js";
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 
 const shortDomainEl = $<HTMLInputElement>("shortDomain");
-const redirectEl = $<HTMLInputElement>("redirect");
 const zoneEl = $<HTMLSelectElement>("zone");
+const subdomainEl = $<HTMLInputElement>("subdomain");
 const deployBtn = $<HTMLButtonElement>("deploy");
 const msgEl = $<HTMLDivElement>("msg");
 
@@ -44,7 +43,6 @@ async function refreshZones(): Promise<void> {
 
 async function init(): Promise<void> {
   shortDomainEl.value = await getShortDomain();
-  redirectEl.value = redirectUrl();
 
   $<HTMLButtonElement>("save").addEventListener("click", async () => {
     const shortDomain = normalizeBaseUrl(shortDomainEl.value);
@@ -56,23 +54,28 @@ async function init(): Promise<void> {
     setMsg("Saved.");
   });
 
-  $<HTMLButtonElement>("copyRedirect").addEventListener("click", async () => {
-    await navigator.clipboard.writeText(redirectEl.value);
-    setMsg("Redirect URL copied.");
-  });
-
   $<HTMLButtonElement>("loadZones").addEventListener("click", () => void refreshZones());
 
   deployBtn.addEventListener("click", async () => {
     const zone = zones.find((z) => z.id === zoneEl.value);
     if (!zone) return;
+    const subdomain = subdomainEl.value.trim().replace(/[^A-Za-z0-9-]/g, "");
     deployBtn.disabled = true;
-    setMsg(`Deploying Hopgo to ${zone.name}...`);
+    const host = subdomain ? `${subdomain}.${zone.name}` : zone.name;
+    setMsg(`Deploying Hopgo to ${host}...`);
     try {
-      const shortDomain = await provisionZone(zone);
-      await setShortDomain(shortDomain);
-      shortDomainEl.value = shortDomain;
-      setMsg(`Done. Short links will be served at ${shortDomain}.`);
+      const result = await provisionZone(zone, subdomain);
+      await setShortDomain(result.shortDomain);
+      shortDomainEl.value = result.shortDomain;
+      if (result.dns === "created") {
+        setMsg(`Done. Short links will be served at ${result.shortDomain}.`);
+      } else {
+        setMsg(
+          `Worker deployed at ${result.host}, but I could not create the DNS record ` +
+            `(grant DNS edit, or add it manually: proxied AAAA record, name ${result.host}, content 100::).`,
+          true,
+        );
+      }
     } catch (err) {
       setMsg(err instanceof Error ? err.message : "Setup failed", true);
     } finally {

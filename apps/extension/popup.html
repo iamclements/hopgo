@@ -82,12 +82,38 @@
         color: #2563eb;
         text-decoration: none;
       }
+      .recent-top {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .recent-target {
+        opacity: 0.6;
+        margin-top: 2px;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .recent-target.expanded {
+        white-space: normal;
+        word-break: break-all;
+      }
+      .recent-toggle {
+        font-size: 11px;
+        margin-top: 2px;
+      }
       .recent-title {
         font-size: 11px;
         text-transform: uppercase;
         letter-spacing: 0.04em;
         opacity: 0.6;
         margin-top: 12px;
+      }
+      .footer {
+        margin-top: 12px;
+        text-align: right;
       }
       .hidden {
         display: none;
@@ -101,13 +127,32 @@
     </div>
     <div class="url" id="current">Reading current tab...</div>
     <button id="connect">Sign in with Cloudflare</button>
+    <input
+      id="slug"
+      class="hidden"
+      type="text"
+      placeholder="custom slug (optional)"
+      pattern="[A-Za-z0-9_-]+"
+      style="
+        width: 100%;
+        padding: 7px 10px;
+        margin-bottom: 6px;
+        border: 1px solid #8884;
+        border-radius: 6px;
+        font: inherit;
+        box-sizing: border-box;
+      "
+    />
     <button id="shorten" class="hidden">Shorten this tab</button>
     <div class="msg" id="msg"></div>
     <div class="result hidden" id="result">
       <code id="short"></code><button class="secondary" id="copy">Copy</button>
     </div>
-    <div class="recent-title">Recent</div>
-    <ul id="recent"></ul>
+    <div class="recent-title">Your links</div>
+    <ul id="links"></ul>
+    <div class="footer">
+      <button class="link hidden" id="signout">Sign out</button>
+    </div>
     <script type="module" src="/src/popup.ts"></script>
   </body>
 </html>

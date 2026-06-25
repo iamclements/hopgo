@@ -11,20 +11,14 @@ import {
   buildAuthorizeUrl,
   createPkcePair,
   exchangeCode,
+  HOPGO_OAUTH_SCOPES,
   randomState,
   type TokenSet,
 } from "@hopgo/shared";
 
 /** Hopgo's public OAuth client (PKCE, no secret). */
 const CLIENT_ID = "13a19e6876148c2dfaa579cfb279893d";
-// KV for links, plus Workers Scripts/Routes + Zone read for one-click domain setup.
-const SCOPES = [
-  "account:read",
-  "workers_kv:write",
-  "workers_scripts:write",
-  "workers_routes:write",
-  "zone:read",
-];
+const SCOPES = [...HOPGO_OAUTH_SCOPES];
 
 /** Run the interactive OAuth flow and return the resulting tokens. */
 export async function signInWithCloudflare(): Promise<TokenSet> {
@@ -54,9 +48,4 @@ export async function signInWithCloudflare(): Promise<TokenSet> {
   }
 
   return exchangeCode(config, { code, codeVerifier: verifier });
-}
-
-/** The redirect URL to register on the OAuth client (shown in options). */
-export function redirectUrl(): string {
-  return chrome.identity.getRedirectURL();
 }

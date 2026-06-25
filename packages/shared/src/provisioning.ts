@@ -52,6 +52,8 @@ interface Envelope<T> {
 export interface CloudflareZone {
   id: string;
   name: string;
+  /** The account that owns the zone (present in /zones responses). */
+  account?: { id: string; name?: string };
 }
 
 function authHeader(token: string): Record<string, string> {
@@ -136,6 +138,49 @@ export async function ensureRoute(
   const body = (await res.json().catch(() => null)) as Envelope<unknown> | null;
   if (!res.ok || !body?.success) {
     throw new CloudflareApiError("Failed to bind Worker route", res.status, body?.errors);
+  }
+}
+
+/**
+ * Ensure a proxied DNS record exists for the host, so the Worker route fires.
+ * A Worker route only runs for hostnames that resolve through Cloudflare. For a
+ * link-only subdomain we use a proxied AAAA to 100:: (a standard black-hole
+ * address): nothing serves it directly, the Worker handles every request.
+ */
+export async function ensureDnsRecord(
+  fetchImpl: typeof fetch,
+  token: string,
+  zoneId: string,
+  name: string,
+): Promise<void> {
+  const listRes = await fetchImpl(
+    `${CF_API}/zones/${zoneId}/dns_records?name=${encodeURIComponent(name)}`,
+    { headers: authHeader(token) },
+  );
+  const listed = (await listRes.json().catch(() => null)) as Envelope<
+    Array<{ id: string; proxied: boolean }>
+  > | null;
+  if (!listRes.ok || !listed?.success) {
+    throw new CloudflareApiError("Failed to list DNS records", listRes.status, listed?.errors);
+  }
+  // A proxied record already routes the host through Cloudflare; leave it alone.
+  if (listed.result.some((r) => r.proxied)) return;
+
+  const res = await fetchImpl(`${CF_API}/zones/${zoneId}/dns_records`, {
+    method: "POST",
+    headers: { ...authHeader(token), "content-type": "application/json" },
+    body: JSON.stringify({
+      type: "AAAA",
+      name,
+      content: "100::",
+      proxied: true,
+      ttl: 1,
+      comment: "Hopgo redirect (Worker route)",
+    }),
+  });
+  const body = (await res.json().catch(() => null)) as Envelope<unknown> | null;
+  if (!res.ok || !body?.success) {
+    throw new CloudflareApiError("Failed to create DNS record", res.status, body?.errors);
   }
 }
 

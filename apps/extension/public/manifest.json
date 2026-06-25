@@ -2,12 +2,12 @@
   "manifest_version": 3,
   "name": "Hopgo",
   "version": "0.0.0",
-  "description": "Shorten the current tab with your self-hosted Hopgo control plane.",
+  "description": "Shorten the current tab to a short link on your own Cloudflare domain.",
   "action": {
     "default_popup": "popup.html",
     "default_title": "Shorten this tab with Hopgo"
   },
   "options_page": "options.html",
-  "permissions": ["activeTab", "storage", "clipboardWrite"],
-  "optional_host_permissions": ["http://*/*", "https://*/*"]
+  "permissions": ["identity", "storage", "activeTab", "clipboardWrite"],
+  "host_permissions": ["https://api.cloudflare.com/*", "https://dash.cloudflare.com/*"]
 }

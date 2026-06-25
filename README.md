@@ -68,6 +68,26 @@ pnpm --filter @hopgo/worker deploy   # wrangler deploy to your account
 
 Set your KV namespace id and route in [apps/worker/wrangler.jsonc](apps/worker/wrangler.jsonc).
 
+## Chrome extension
+
+The MV3 extension in [apps/extension](apps/extension) signs in with Cloudflare (OAuth, PKCE via
+`chrome.identity`) and talks to the Cloudflare API directly, so it needs no backend. It shortens the
+current tab into your `hopgo-links` KV namespace and copies the short URL.
+
+```bash
+pnpm --filter @hopgo/extension build   # outputs apps/extension/dist
+```
+
+Load and connect:
+
+1. Open `chrome://extensions`, enable Developer mode, "Load unpacked," pick `apps/extension/dist`.
+2. Open the extension's Options. Copy the shown **OAuth redirect URL** and add it to your Cloudflare
+   OAuth client's redirect URIs. Set your **short-link domain** (where your redirect Worker runs).
+3. Open the popup and click **Sign in with Cloudflare**, approve, then shorten any tab.
+
+Note: links are created in the `hopgo-links` KV namespace, so your redirect Worker must be bound to
+that namespace. One-click Worker provisioning (so this is automatic) is on the roadmap.
+
 ## Security
 
 - **OAuth, not pasted tokens.** You sign in with Cloudflare and approve a minimal scope. The web
@@ -81,14 +101,15 @@ Set your KV namespace id and route in [apps/worker/wrangler.jsonc](apps/worker/w
 
 ## Roadmap
 
-Shipped: redirect Worker, shared Cloudflare client + OAuth (PKCE), slug/link helpers.
+Shipped: redirect Worker, shared Cloudflare client + OAuth (PKCE) + account/namespace discovery,
+slug/link helpers, and the Chrome extension (sign in with Cloudflare, shorten the current tab).
 
 Next:
 
-1. Web app: sign in with Cloudflare, manage links (create, list, delete, click counts).
-2. Extension: sign in with Cloudflare, shorten the current tab.
-3. One-click setup: provision the redirect Worker + route into your account on a domain you pick.
-4. Release pipeline: publish the extension to the Chrome Web Store and the web app to Cloudflare Pages.
+1. One-click setup: provision the redirect Worker + route into your account on a domain you pick.
+2. Web app: a static frontend plus a thin Cloudflare Worker backend (Cloudflare's API has no CORS,
+   so a browser page needs a proxy) to manage links from anywhere.
+3. Release pipeline: publish the extension to the Chrome Web Store and the web app to Cloudflare Pages.
 
 ## License
 

@@ -1,22 +1,36 @@
-/** Settings and recent-link persistence via chrome.storage.local. */
+/** Persistence via chrome.storage.local: the Cloudflare connection, the user's
+ * short-link domain, and recent links. */
 import { dedupeRecent, type RecentLink } from "./util.js";
 
-export interface Settings {
-  /** Control-plane API origin, e.g. http://localhost:8787. */
-  apiBaseUrl: string;
-  /** Optional bearer token forwarded to the control plane. */
-  token?: string;
+export interface Connection {
+  accessToken: string;
+  /** Epoch ms when the access token expires. */
+  expiresAt: number;
+  accountId: string;
+  namespaceId: string;
 }
 
-const DEFAULT_SETTINGS: Settings = { apiBaseUrl: "" };
-
-export async function getSettings(): Promise<Settings> {
-  const { settings } = await chrome.storage.local.get("settings");
-  return (settings as Settings) ?? DEFAULT_SETTINGS;
+export async function getConnection(): Promise<Connection | null> {
+  const { connection } = await chrome.storage.local.get("connection");
+  return (connection as Connection) ?? null;
 }
 
-export async function saveSettings(settings: Settings): Promise<void> {
-  await chrome.storage.local.set({ settings });
+export async function setConnection(connection: Connection): Promise<void> {
+  await chrome.storage.local.set({ connection });
+}
+
+export async function clearConnection(): Promise<void> {
+  await chrome.storage.local.remove("connection");
+}
+
+/** The origin where the user's redirects are served, e.g. https://go.example.com. */
+export async function getShortDomain(): Promise<string> {
+  const { shortDomain } = await chrome.storage.local.get("shortDomain");
+  return (shortDomain as string) ?? "";
+}
+
+export async function setShortDomain(shortDomain: string): Promise<void> {
+  await chrome.storage.local.set({ shortDomain });
 }
 
 export async function getRecent(): Promise<RecentLink[]> {

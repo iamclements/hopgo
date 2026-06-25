@@ -36,6 +36,18 @@ export {
   type CloudflareAccount,
 } from "./discovery.js";
 export {
+  listZones,
+  deployWorker,
+  ensureRoute,
+  provisionDomain,
+  REDIRECT_WORKER_SCRIPT,
+  DEFAULT_SCRIPT_NAME,
+  DEFAULT_COMPATIBILITY_DATE,
+  type CloudflareZone,
+  type DeployWorkerOptions,
+  type ProvisionOptions,
+} from "./provisioning.js";
+export {
   buildAuthorizeUrl,
   createPkcePair,
   exchangeCode,

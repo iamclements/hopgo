@@ -82,11 +82,14 @@ Load and connect:
 
 1. Open `chrome://extensions`, enable Developer mode, "Load unpacked," pick `apps/extension/dist`.
 2. Open the extension's Options. Copy the shown **OAuth redirect URL** and add it to your Cloudflare
-   OAuth client's redirect URIs. Set your **short-link domain** (where your redirect Worker runs).
-3. Open the popup and click **Sign in with Cloudflare**, approve, then shorten any tab.
+   OAuth client's redirect URIs.
+3. Open the popup and click **Sign in with Cloudflare**, approve the scopes.
+4. Back in Options, under **One-click domain setup**, click **Load domains**, pick one, and
+   **Deploy**. Hopgo deploys the redirect Worker into your account, binds `yourdomain/*` to it, and
+   sets your short-link domain. Now shorten any tab from the popup.
 
-Note: links are created in the `hopgo-links` KV namespace, so your redirect Worker must be bound to
-that namespace. One-click Worker provisioning (so this is automatic) is on the roadmap.
+If you already run your own Worker, skip step 4 and just set the short-link domain manually (it must
+be bound to the `hopgo-links` KV namespace).
 
 ## Security
 
@@ -101,15 +104,15 @@ that namespace. One-click Worker provisioning (so this is automatic) is on the r
 
 ## Roadmap
 
-Shipped: redirect Worker, shared Cloudflare client + OAuth (PKCE) + account/namespace discovery,
-slug/link helpers, and the Chrome extension (sign in with Cloudflare, shorten the current tab).
+Shipped: redirect Worker, shared Cloudflare client + OAuth (PKCE) + account/zone/namespace
+discovery, slug/link helpers, the Chrome extension (sign in with Cloudflare, shorten the current
+tab), and one-click domain setup (deploy the Worker + bind the route into your account).
 
 Next:
 
-1. One-click setup: provision the redirect Worker + route into your account on a domain you pick.
-2. Web app: a static frontend plus a thin Cloudflare Worker backend (Cloudflare's API has no CORS,
+1. Web app: a static frontend plus a thin Cloudflare Worker backend (Cloudflare's API has no CORS,
    so a browser page needs a proxy) to manage links from anywhere.
-3. Release pipeline: publish the extension to the Chrome Web Store and the web app to Cloudflare Pages.
+2. Release pipeline: publish the extension to the Chrome Web Store and the web app to Cloudflare Pages.
 
 ## License
 

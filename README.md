@@ -122,6 +122,19 @@ pnpm --filter @hopgo/control-plane test    # Vitest against an in-memory KV
 | `GET`    | `/api/links/:slug`        | -                                  | the link plus its `clicks` count, or `404`         |
 | `DELETE` | `/api/links/:slug`        | -                                  | `204`, or `404` if unknown                         |
 
+### Doctor (preflight check)
+
+Before you rely on the setup, run the preflight check. It verifies required env, that the scoped
+token is active, that the KV namespace is reachable, and that the worker is serving redirects.
+
+```bash
+pnpm --filter @hopgo/control-plane doctor          # local, reads your shell env / .env
+docker compose run --rm control-plane node dist/doctor.js   # inside the container
+```
+
+It prints one line per check (`✓` pass, `✗` fail, `!` warn, `-` skipped) and exits non-zero if any
+check fails, so it is safe to gate a deploy on it.
+
 ## Chrome extension
 
 The MV3 extension in [apps/extension](apps/extension) shortens the current tab in one click, copies
@@ -140,7 +153,7 @@ Load it: open `chrome://extensions`, enable Developer mode, choose "Load unpacke
 ## Roadmap
 
 Early development. Each item below is one PR. Done: scaffold, worker redirect, shared CF client,
-control-plane API, control-plane portal, extension.
+control-plane API, control-plane portal, extension, doctor.
 
 1. `chore/scaffold` - pnpm monorepo, four packages, CLAUDE.md, README, MIT LICENSE, .env.example,
    ESLint/Prettier/tsconfig, CI (lint + typecheck + test).

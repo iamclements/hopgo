@@ -1,0 +1,26 @@
+{
+  // Hopgo edge redirect Worker. Bind it to the apex so every hopgo.co/:slug hits it.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "hopgo",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-01",
+  "observability": {
+    "enabled": true,
+  },
+  // Replace "id" with the namespace id of your KV namespace (e.g. "hopgo-links").
+  // Get it with: wrangler kv namespace create hopgo-links
+  "kv_namespaces": [
+    {
+      "binding": "LINKS",
+      "id": "REPLACE_WITH_KV_NAMESPACE_ID",
+    },
+  ],
+  // Serve redirects from the apex. The zone must already exist in your account.
+  // Comment this out for `wrangler dev` against a *.workers.dev preview.
+  "routes": [
+    {
+      "pattern": "hopgo.co/*",
+      "zone_name": "hopgo.co",
+    },
+  ],
+}

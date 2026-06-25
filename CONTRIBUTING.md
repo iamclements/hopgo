@@ -54,9 +54,9 @@ Test plan
 
 ## Docs sync
 
-Any PR that changes functionality, commands, env vars, config, or Docker behavior updates the
-relevant docs in the same commit: `README.md`, `.env.example`, `docker-compose.yml`, and any config
-examples. `CHANGELOG.md` is touched only in release commits.
+Any PR that changes functionality, commands, config, or the OAuth scopes updates the relevant docs
+in the same commit: `README.md` and any config examples. `CHANGELOG.md` is touched only in release
+commits.
 
 ## Style
 

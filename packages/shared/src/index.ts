@@ -29,6 +29,19 @@ export {
   type ListLinksResult,
 } from "./links.js";
 export {
+  buildAuthorizeUrl,
+  createPkcePair,
+  exchangeCode,
+  refreshTokens,
+  isTokenExpired,
+  randomState,
+  OAuthError,
+  HOPGO_OAUTH_SCOPES,
+  type OAuthConfig,
+  type TokenSet,
+  type PkcePair,
+} from "./oauth.js";
+export {
   generateSlug,
   generateUniqueSlug,
   isValidSlug,

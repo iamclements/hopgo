@@ -39,6 +39,9 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
     devDependencies:
+      '@types/node':
+        specifier: ^26.0.0
+        version: 26.0.0
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -79,6 +82,9 @@ importers:
 
   packages/shared:
     devDependencies:
+      '@types/node':
+        specifier: ^26.0.0
+        version: 26.0.0
       typescript:
         specifier: ^6.0.3
         version: 6.0.3

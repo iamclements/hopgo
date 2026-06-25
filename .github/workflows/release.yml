@@ -1,0 +1,43 @@
+name: Release extension
+
+# Publishes the Chrome extension to the Chrome Web Store when a version tag is
+# pushed (e.g. v0.1.0). The manifest version is set from the tag at build time.
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Set manifest version from tag
+        run: |
+          node -e "const fs=require('fs');const p='apps/extension/public/manifest.json';const m=JSON.parse(fs.readFileSync(p));m.version=process.env.TAG.replace(/^v/,'');fs.writeFileSync(p,JSON.stringify(m,null,2)+'\n');"
+        env:
+          TAG: ${{ github.ref_name }}
+
+      - name: Build extension
+        run: pnpm --filter @hopgo/extension build
+
+      - name: Publish to Chrome Web Store
+        run: >
+          pnpm dlx chrome-webstore-upload-cli@3 upload
+          --source apps/extension/dist
+          --auto-publish
+        env:
+          EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+          CLIENT_ID: ${{ secrets.CWS_CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CWS_CLIENT_SECRET }}
+          REFRESH_TOKEN: ${{ secrets.CWS_REFRESH_TOKEN }}

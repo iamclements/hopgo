@@ -80,6 +80,35 @@ describe("writeValue", () => {
   });
 });
 
+describe("token provider", () => {
+  it("calls getToken per request so OAuth tokens can refresh", async () => {
+    const getToken = vi.fn().mockResolvedValueOnce("first").mockResolvedValueOnce("second");
+    fetchMock.mockImplementation(() => Promise.resolve(new Response("v", { status: 200 })));
+    const c = new CloudflareKvClient({
+      ...config,
+      getToken,
+      fetch: fetchMock as unknown as typeof fetch,
+    });
+
+    await c.readValue("a");
+    await c.readValue("b");
+
+    expect(getToken).toHaveBeenCalledTimes(2);
+    expect((fetchMock.mock.calls[0]![1] as RequestInit).headers).toMatchObject({
+      authorization: "Bearer first",
+    });
+    expect((fetchMock.mock.calls[1]![1] as RequestInit).headers).toMatchObject({
+      authorization: "Bearer second",
+    });
+  });
+
+  it("throws when neither apiToken nor getToken is provided", () => {
+    expect(() => new CloudflareKvClient({ accountId: "a", namespaceId: "n" })).toThrow(
+      /apiToken or getToken/,
+    );
+  });
+});
+
 describe("deleteValue", () => {
   it("sends DELETE", async () => {
     fetchMock.mockResolvedValue(ok(null));

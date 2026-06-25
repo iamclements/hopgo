@@ -13,8 +13,16 @@
 const DEFAULT_BASE_URL = "https://api.cloudflare.com/client/v4";
 
 export interface CloudflareKvConfig {
-  /** Scoped API token (Bearer). */
-  apiToken: string;
+  /**
+   * Static scoped API token (Bearer). Provide this OR getToken. getToken wins
+   * when both are set, which is how OAuth access tokens (with refresh) flow in.
+   */
+  apiToken?: string;
+  /**
+   * Returns a fresh Bearer token per request. Use this for OAuth so the client
+   * always sends a valid (auto-refreshed) access token.
+   */
+  getToken?: () => string | Promise<string>;
   accountId: string;
   namespaceId: string;
   /** Override for tests or self-hosted proxies. Defaults to the public API. */
@@ -62,14 +70,21 @@ export interface ListKeysOptions {
 }
 
 export class CloudflareKvClient {
-  private readonly apiToken: string;
+  private readonly getToken: () => string | Promise<string>;
   private readonly accountId: string;
   private readonly namespaceId: string;
   private readonly baseUrl: string;
   private readonly fetchImpl: typeof fetch;
 
   constructor(config: CloudflareKvConfig) {
-    this.apiToken = config.apiToken;
+    if (config.getToken) {
+      this.getToken = config.getToken;
+    } else if (config.apiToken) {
+      const token = config.apiToken;
+      this.getToken = () => token;
+    } else {
+      throw new Error("CloudflareKvClient requires apiToken or getToken");
+    }
     this.accountId = config.accountId;
     this.namespaceId = config.namespaceId;
     this.baseUrl = config.baseUrl ?? DEFAULT_BASE_URL;
@@ -80,14 +95,14 @@ export class CloudflareKvClient {
     return `${this.baseUrl}/accounts/${this.accountId}/storage/kv/namespaces/${this.namespaceId}${suffix}`;
   }
 
-  private get authHeaders(): Record<string, string> {
-    return { authorization: `Bearer ${this.apiToken}` };
+  private async authHeaders(): Promise<Record<string, string>> {
+    return { authorization: `Bearer ${await this.getToken()}` };
   }
 
   /** Read a raw value. Returns null when the key does not exist. */
   async readValue(key: string): Promise<string | null> {
     const res = await this.fetchImpl(this.namespacePath(`/values/${encodeURIComponent(key)}`), {
-      headers: this.authHeaders,
+      headers: await this.authHeaders(),
     });
     if (res.status === 404) return null;
     if (!res.ok) {
@@ -100,7 +115,7 @@ export class CloudflareKvClient {
   async writeValue(key: string, value: string): Promise<void> {
     const res = await this.fetchImpl(this.namespacePath(`/values/${encodeURIComponent(key)}`), {
       method: "PUT",
-      headers: { ...this.authHeaders, "content-type": "text/plain" },
+      headers: { ...(await this.authHeaders()), "content-type": "text/plain" },
       body: value,
     });
     await this.assertEnvelope(res, `write key "${key}"`);
@@ -110,7 +125,7 @@ export class CloudflareKvClient {
   async deleteValue(key: string): Promise<void> {
     const res = await this.fetchImpl(this.namespacePath(`/values/${encodeURIComponent(key)}`), {
       method: "DELETE",
-      headers: this.authHeaders,
+      headers: await this.authHeaders(),
     });
     await this.assertEnvelope(res, `delete key "${key}"`);
   }
@@ -124,7 +139,7 @@ export class CloudflareKvClient {
     const query = params.toString();
 
     const res = await this.fetchImpl(this.namespacePath(`/keys${query ? `?${query}` : ""}`), {
-      headers: this.authHeaders,
+      headers: await this.authHeaders(),
     });
     const envelope = await this.assertEnvelope<KvKey[]>(res, "list keys");
     const cursor = envelope.result_info?.cursor;

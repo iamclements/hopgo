@@ -62,3 +62,18 @@ commits.
 
 - No em dashes anywhere: use colons, hyphens, or split sentences.
 - TypeScript strict mode. Prefer small, typed modules.
+
+## Releasing the extension
+
+Publishing to the Chrome Web Store is automated by
+[.github/workflows/release.yml](.github/workflows/release.yml), triggered when a `v*` tag is
+pushed. The workflow sets the manifest version from the tag, builds, and uploads with auto-publish.
+
+One-time setup (repo secrets):
+
+- `CWS_EXTENSION_ID` - the extension id from the Chrome Web Store dashboard.
+- `CWS_CLIENT_ID`, `CWS_CLIENT_SECRET`, `CWS_REFRESH_TOKEN` - Google OAuth credentials for the
+  Web Store API (see the chrome-webstore-upload docs on generating Google API keys).
+
+To cut a release: bump `CHANGELOG.md` (move `[Unreleased]` to the new version), commit, then
+`git tag vX.Y.Z && git push --tags`. CI publishes it.

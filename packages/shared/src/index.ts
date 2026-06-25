@@ -39,6 +39,7 @@ export {
   listZones,
   deployWorker,
   ensureRoute,
+  ensureDnsRecord,
   provisionDomain,
   REDIRECT_WORKER_SCRIPT,
   DEFAULT_SCRIPT_NAME,

@@ -8,6 +8,7 @@
     "default_title": "Shorten this tab with Hopgo"
   },
   "options_page": "options.html",
+  "background": { "service_worker": "background.js", "type": "module" },
   "permissions": ["identity", "storage", "activeTab", "clipboardWrite"],
   "host_permissions": ["https://api.cloudflare.com/*", "https://dash.cloudflare.com/*"]
 }

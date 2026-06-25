@@ -3,7 +3,8 @@
  * redirect Worker bound to the connection's KV namespace, then return the short
  * domain. Requires an active connection (sign in via the popup first).
  */
-import { listZones, provisionDomain, type CloudflareZone } from "@hopgo/shared";
+import { ensureDnsRecord, listZones, provisionDomain, type CloudflareZone } from "@hopgo/shared";
+import { cfFetch } from "./cf-fetch.js";
 import { currentConnection } from "./session.js";
 
 export async function loadZones(): Promise<CloudflareZone[]> {
@@ -11,20 +12,44 @@ export async function loadZones(): Promise<CloudflareZone[]> {
   if (!connection) {
     throw new Error("Sign in with Cloudflare first (open the popup).");
   }
-  return listZones(fetch, connection.accessToken);
+  return listZones(cfFetch, connection.accessToken);
 }
 
-/** Deploy the Worker + bind the apex route for the zone. Returns the short domain. */
-export async function provisionZone(zone: CloudflareZone): Promise<string> {
+export interface ProvisionResult {
+  shortDomain: string;
+  host: string;
+  /** Whether the DNS record was created automatically or needs manual creation. */
+  dns: "created" | "manual";
+}
+
+/**
+ * Deploy the Worker, bind the route, and ensure DNS for `<subdomain>.<zone>` (or
+ * the apex if subdomain is blank). DNS creation is best-effort: if the token lacks
+ * DNS-write, the caller is told to add the record manually.
+ */
+export async function provisionZone(
+  zone: CloudflareZone,
+  subdomain: string,
+): Promise<ProvisionResult> {
   const connection = await currentConnection();
   if (!connection) {
     throw new Error("Sign in with Cloudflare first (open the popup).");
   }
-  await provisionDomain(fetch, connection.accessToken, {
+
+  const host = subdomain ? `${subdomain}.${zone.name}` : zone.name;
+  await provisionDomain(cfFetch, connection.accessToken, {
     accountId: connection.accountId,
     zoneId: zone.id,
-    pattern: `${zone.name}/*`,
+    pattern: `${host}/*`,
     namespaceId: connection.namespaceId,
   });
-  return `https://${zone.name}`;
+
+  let dns: ProvisionResult["dns"] = "created";
+  try {
+    await ensureDnsRecord(cfFetch, connection.accessToken, zone.id, host);
+  } catch {
+    dns = "manual";
+  }
+
+  return { shortDomain: `https://${host}`, host, dns };
 }

@@ -1,6 +1,6 @@
 /** Persistence via chrome.storage.local: the Cloudflare connection, the user's
- * short-link domain, and recent links. */
-import { dedupeRecent, type RecentLink } from "./util.js";
+ * short-link domain, and a cached copy of the link list for instant popup loads. */
+import type { Link } from "@hopgo/shared";
 
 export interface Connection {
   accessToken: string;
@@ -20,7 +20,17 @@ export async function setConnection(connection: Connection): Promise<void> {
 }
 
 export async function clearConnection(): Promise<void> {
-  await chrome.storage.local.remove("connection");
+  await chrome.storage.local.remove(["connection", "linksCache"]);
+}
+
+/** Cached link list, shown instantly on open while a fresh copy loads. */
+export async function getCachedLinks(): Promise<Link[]> {
+  const { linksCache } = await chrome.storage.local.get("linksCache");
+  return (linksCache as Link[]) ?? [];
+}
+
+export async function setCachedLinks(links: Link[]): Promise<void> {
+  await chrome.storage.local.set({ linksCache: links });
 }
 
 /** The origin where the user's redirects are served, e.g. https://go.example.com. */
@@ -31,15 +41,4 @@ export async function getShortDomain(): Promise<string> {
 
 export async function setShortDomain(shortDomain: string): Promise<void> {
   await chrome.storage.local.set({ shortDomain });
-}
-
-export async function getRecent(): Promise<RecentLink[]> {
-  const { recent } = await chrome.storage.local.get("recent");
-  return (recent as RecentLink[]) ?? [];
-}
-
-export async function addRecent(link: RecentLink): Promise<RecentLink[]> {
-  const next = dedupeRecent(await getRecent(), link);
-  await chrome.storage.local.set({ recent: next });
-  return next;
 }

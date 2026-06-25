@@ -71,15 +71,6 @@
       The domain where your Hopgo redirect Worker is deployed. Short links are built from this.
     </div>
 
-    <label for="redirect">OAuth redirect URL</label>
-    <div class="row">
-      <input id="redirect" type="text" readonly />
-      <button class="secondary" id="copyRedirect">Copy</button>
-    </div>
-    <div class="hint">
-      Add this exact URL to your Cloudflare OAuth client's redirect URIs before signing in.
-    </div>
-
     <button id="save">Save</button>
 
     <h2 style="margin-top: 2rem; font-size: 1rem">One-click domain setup</h2>
@@ -88,9 +79,21 @@
       first, then load your domains and deploy. This sets your short-link domain automatically.
     </div>
     <div class="row" style="margin-top: 0.5rem">
+      <input
+        id="subdomain"
+        type="text"
+        value="go"
+        placeholder="subdomain"
+        style="flex: 0 0 110px"
+      />
+      <span style="opacity: 0.6">.</span>
       <select id="zone" style="flex: 1; padding: 0.5rem 0.6rem; border-radius: 6px"></select>
       <button class="secondary" id="loadZones">Load domains</button>
       <button id="deploy" disabled style="margin-top: 0">Deploy</button>
+    </div>
+    <div class="hint">
+      Links are served from this subdomain (e.g. go.example.com). Leave it blank to use the apex,
+      but only if nothing else is served there. A proxied DNS record is created for it.
     </div>
 
     <div class="msg" id="msg"></div>

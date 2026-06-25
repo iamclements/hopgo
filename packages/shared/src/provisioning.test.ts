@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { CloudflareApiError } from "./cloudflare.js";
-import { deployWorker, ensureRoute, listZones, provisionDomain } from "./provisioning.js";
+import {
+  deployWorker,
+  ensureDnsRecord,
+  ensureRoute,
+  listZones,
+  provisionDomain,
+} from "./provisioning.js";
 
 function json(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -77,6 +83,31 @@ describe("ensureRoute", () => {
       .fn()
       .mockResolvedValueOnce(ok([{ pattern: "example.com/*", script: "hopgo" }]));
     await ensureRoute(fetchMock as unknown as typeof fetch, "tok", "z1", "example.com/*");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("ensureDnsRecord", () => {
+  it("creates a proxied AAAA when no proxied record exists", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(ok([{ id: "d1", proxied: false }]))
+      .mockResolvedValueOnce(ok({ id: "d2" }));
+
+    await ensureDnsRecord(fetchMock as unknown as typeof fetch, "tok", "z1", "go.example.com");
+
+    const body = JSON.parse((fetchMock.mock.calls[1]![1] as RequestInit).body as string);
+    expect(body).toMatchObject({
+      type: "AAAA",
+      name: "go.example.com",
+      content: "100::",
+      proxied: true,
+    });
+  });
+
+  it("skips creation when a proxied record already exists", async () => {
+    const fetchMock = vi.fn().mockResolvedValueOnce(ok([{ id: "d1", proxied: true }]));
+    await ensureDnsRecord(fetchMock as unknown as typeof fetch, "tok", "z1", "go.example.com");
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

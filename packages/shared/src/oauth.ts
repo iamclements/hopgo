@@ -14,8 +14,18 @@
 
 const DEFAULT_AUTH_BASE = "https://dash.cloudflare.com";
 
-/** Scopes Hopgo needs: read the account, edit Workers KV, and get a refresh token. */
-export const HOPGO_OAUTH_SCOPES = ["account:read", "workers_kv:write", "offline_access"] as const;
+/**
+ * Scopes Hopgo needs, as self-managed OAuth client scope IDs (dot-format, not the
+ * wrangler "workers_kv:write" vocabulary). KV for links, Workers Scripts + Routes
+ * + Zone read for one-click domain setup, Account Settings read for discovery.
+ */
+export const HOPGO_OAUTH_SCOPES = [
+  "workers-kv-storage.write",
+  "workers-scripts.write",
+  "workers-routes.write",
+  "zone.read",
+  "dns.write",
+] as const;
 
 /** Clock skew applied when deciding whether an access token is still usable. */
 const EXPIRY_SKEW_MS = 30_000;
@@ -93,7 +103,10 @@ export function buildAuthorizeUrl(
   url.searchParams.set("response_type", "code");
   url.searchParams.set("client_id", config.clientId);
   url.searchParams.set("redirect_uri", config.redirectUri);
-  url.searchParams.set("scope", scopeString(config));
+  // Omit scope to fall back to the scopes configured on the OAuth client. Pass a
+  // non-empty scopes array only if you want to request a subset.
+  const scope = scopeString(config);
+  if (scope) url.searchParams.set("scope", scope);
   url.searchParams.set("state", params.state);
   url.searchParams.set("code_challenge", params.codeChallenge);
   url.searchParams.set("code_challenge_method", "S256");
@@ -112,7 +125,7 @@ async function postToken(
   body: Record<string, string>,
   now: number,
 ): Promise<TokenSet> {
-  const fetchImpl = config.fetch ?? globalThis.fetch;
+  const fetchImpl = config.fetch ?? globalThis.fetch.bind(globalThis);
   const res = await fetchImpl(`${authBase(config)}/oauth2/token`, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
@@ -127,7 +140,9 @@ async function postToken(
   return {
     accessToken: json.access_token,
     refreshToken: json.refresh_token,
-    expiresAt: now + (json.expires_in ?? 0) * 1000,
+    // Default to 1h when the provider omits expires_in, so the token is not treated
+    // as immediately expired.
+    expiresAt: now + (json.expires_in ?? 3600) * 1000,
     scope: json.scope,
   };
 }

@@ -17,7 +17,14 @@ import {
 
 /** Hopgo's public OAuth client (PKCE, no secret). */
 const CLIENT_ID = "13a19e6876148c2dfaa579cfb279893d";
-const SCOPES = ["account:read", "workers_kv:write"];
+// KV for links, plus Workers Scripts/Routes + Zone read for one-click domain setup.
+const SCOPES = [
+  "account:read",
+  "workers_kv:write",
+  "workers_scripts:write",
+  "workers_routes:write",
+  "zone:read",
+];
 
 /** Run the interactive OAuth flow and return the resulting tokens. */
 export async function signInWithCloudflare(): Promise<TokenSet> {

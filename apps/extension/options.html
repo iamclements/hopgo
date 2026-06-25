@@ -81,6 +81,18 @@
     </div>
 
     <button id="save">Save</button>
+
+    <h2 style="margin-top: 2rem; font-size: 1rem">One-click domain setup</h2>
+    <div class="hint">
+      Deploy the Hopgo redirect Worker to one of your Cloudflare domains. Sign in via the popup
+      first, then load your domains and deploy. This sets your short-link domain automatically.
+    </div>
+    <div class="row" style="margin-top: 0.5rem">
+      <select id="zone" style="flex: 1; padding: 0.5rem 0.6rem; border-radius: 6px"></select>
+      <button class="secondary" id="loadZones">Load domains</button>
+      <button id="deploy" disabled style="margin-top: 0">Deploy</button>
+    </div>
+
     <div class="msg" id="msg"></div>
     <script type="module" src="/src/options.ts"></script>
   </body>

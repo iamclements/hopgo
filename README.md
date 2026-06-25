@@ -74,7 +74,7 @@ Before deploying, set the KV namespace id in [apps/worker/wrangler.jsonc](apps/w
 
 ## Roadmap
 
-Early development. Each item below is one PR. Done: scaffold, worker redirect.
+Early development. Each item below is one PR. Done: scaffold, worker redirect, shared CF client.
 
 1. `chore/scaffold` - pnpm monorepo, four packages, CLAUDE.md, README, MIT LICENSE, .env.example,
    ESLint/Prettier/tsconfig, CI (lint + typecheck + test).

@@ -72,9 +72,55 @@ Before deploying, set the KV namespace id in [apps/worker/wrangler.jsonc](apps/w
 (the `LINKS` binding). Create the namespace with `wrangler kv namespace create hopgo-links`. The
 `hopgo.co/*` route is declared there too and binds on deploy.
 
+## Control plane (the disposable container)
+
+The management API lives in [apps/control-plane](apps/control-plane): a Hono REST API that CRUDs
+links in Cloudflare KV via the scoped token. It holds no state of its own. Wipe the container,
+redeploy it, lose zero links. Bind it to LAN only; for remote admin put a Cloudflare Tunnel +
+Access in front rather than opening a port.
+
+### Run with Docker
+
+```bash
+cp .env.example .env          # fill in your scoped token, account id, KV namespace id
+docker compose up -d          # builds the image and starts the container on 127.0.0.1:8787
+curl http://127.0.0.1:8787/health
+```
+
+Local dev without Docker:
+
+```bash
+pnpm --filter @hopgo/control-plane dev     # tsx watch on the source
+pnpm --filter @hopgo/control-plane build   # bundle to dist/ (what the image runs)
+pnpm --filter @hopgo/control-plane test    # Vitest against an in-memory KV
+```
+
+### Environment variables
+
+| Variable             | Required | Default     | Purpose                                                                      |
+| -------------------- | -------- | ----------- | ---------------------------------------------------------------------------- |
+| `CF_API_TOKEN`       | yes      | -           | Scoped Cloudflare token (Workers KV Storage edit). Never the Global API Key. |
+| `CF_ACCOUNT_ID`      | yes      | -           | Account that owns the KV namespace.                                          |
+| `CF_KV_NAMESPACE_ID` | yes      | -           | KV namespace id holding the links.                                           |
+| `HOPGO_TENANT_ID`    | no       | `local`     | Tenant stamped onto created links.                                           |
+| `HOST`               | no       | `127.0.0.1` | Bind address. Compose sets `0.0.0.0` inside the container and maps to LAN.   |
+| `PORT`               | no       | `8787`      | Listen port.                                                                 |
+| `PUID` / `PGID`      | no       | `1000`      | Host user/group ids the container drops to (Docker only).                    |
+
+### API
+
+| Method   | Path                      | Body                               | Result                                             |
+| -------- | ------------------------- | ---------------------------------- | -------------------------------------------------- |
+| `GET`    | `/health`                 | -                                  | `{ "status": "ok" }`                               |
+| `POST`   | `/api/links`              | `{ "url": "...", "slug"?: "..." }` | `201` with the created link (auto slug if omitted) |
+| `GET`    | `/api/links?limit&cursor` | -                                  | `{ "links": [...], "cursor"?: "..." }`             |
+| `GET`    | `/api/links/:slug`        | -                                  | the link plus its `clicks` count, or `404`         |
+| `DELETE` | `/api/links/:slug`        | -                                  | `204`, or `404` if unknown                         |
+
 ## Roadmap
 
-Early development. Each item below is one PR. Done: scaffold, worker redirect, shared CF client.
+Early development. Each item below is one PR. Done: scaffold, worker redirect, shared CF client,
+control-plane API.
 
 1. `chore/scaffold` - pnpm monorepo, four packages, CLAUDE.md, README, MIT LICENSE, .env.example,
    ESLint/Prettier/tsconfig, CI (lint + typecheck + test).

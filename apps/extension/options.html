@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hopgo settings</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
+        max-width: 480px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      label {
+        display: block;
+        margin: 1rem 0 0.25rem;
+        font-weight: 600;
+      }
+      input {
+        width: 100%;
+        padding: 0.5rem 0.6rem;
+        border: 1px solid #8884;
+        border-radius: 6px;
+        font: inherit;
+      }
+      .hint {
+        font-size: 12px;
+        opacity: 0.7;
+        margin-top: 0.25rem;
+      }
+      button {
+        margin-top: 1.25rem;
+        font: inherit;
+        border: 0;
+        border-radius: 6px;
+        padding: 0.5rem 0.9rem;
+        background: #2563eb;
+        color: #fff;
+        cursor: pointer;
+      }
+      .msg {
+        min-height: 18px;
+        font-size: 13px;
+        margin-top: 0.75rem;
+      }
+      .msg.error {
+        color: #dc2626;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Hopgo settings</h1>
+    <label for="apiBaseUrl">Control-plane API URL</label>
+    <input id="apiBaseUrl" type="url" placeholder="http://localhost:8787" />
+    <div class="hint">Where your Hopgo container is reachable on your LAN.</div>
+
+    <label for="token">Bearer token (optional)</label>
+    <input id="token" type="password" placeholder="leave blank if the API needs no auth" />
+
+    <button id="save">Save</button>
+    <div class="msg" id="msg"></div>
+    <script type="module" src="/src/options.ts"></script>
+  </body>
+</html>

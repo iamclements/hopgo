@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
@@ -11,7 +13,9 @@
     "@hopgo/shared": "workspace:*"
   },
   "devDependencies": {
+    "@types/chrome": "^0.2.0",
     "typescript": "^6.0.3",
+    "vite": "^8.1.0",
     "vitest": "^4.1.9"
   }
 }

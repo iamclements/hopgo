@@ -139,7 +139,7 @@ function renderLinks(links: LinkWithClicks[]): void {
 
     const clicks = document.createElement("span");
     clicks.className = "link-clicks";
-    if (link.clicks > 0) clicks.textContent = `${link.clicks}`;
+    clicks.textContent = String(link.clicks);
 
     top.append(shortSpan, copyIcon, clicks);
 

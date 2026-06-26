@@ -301,12 +301,11 @@
 
       .link-row {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         gap: 8px;
-        padding: 5px 14px;
+        padding: 7px 14px;
         cursor: pointer;
         transition: background 0.1s;
-        position: relative;
       }
 
       .link-row:hover {
@@ -319,6 +318,18 @@
         border-radius: 50%;
         background: var(--blue);
         flex-shrink: 0;
+        margin-top: 4px;
+      }
+
+      .link-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .link-top {
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
 
       .link-short {
@@ -336,11 +347,35 @@
         color: #b8c2d0;
       }
 
+      /* Always-visible copy icon — makes the action discoverable */
+      .link-copy {
+        flex-shrink: 0;
+        color: var(--text-faint);
+        display: flex;
+        align-items: center;
+        transition: color 0.15s;
+      }
+
+      .link-row:hover .link-copy {
+        color: var(--blue-bright);
+      }
+
       .link-clicks {
         font-family: var(--mono);
-        font-size: 11px;
+        font-size: 10px;
         color: var(--text-faint);
         flex-shrink: 0;
+      }
+
+      /* Destination URL — always shown so users see where the link goes */
+      .link-dest {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-faint);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-top: 2px;
       }
 
       .link-del {
@@ -348,13 +383,14 @@
         border: none;
         cursor: pointer;
         color: #f87171;
-        font-size: 11px;
-        font-family: var(--mono);
-        padding: 2px 4px;
+        font-size: 13px;
+        line-height: 1;
+        padding: 1px 3px;
         border-radius: 3px;
         opacity: 0;
         transition: opacity 0.15s;
         flex-shrink: 0;
+        margin-top: 1px;
       }
 
       .link-row:hover .link-del {
@@ -553,14 +589,25 @@
 
       <!-- slug -->
       <div class="field" style="padding-bottom: 10px">
-        <div class="field-label">Your short link</div>
+        <div class="field-label">
+          Your short link
+          <span
+            style="
+              text-transform: none;
+              letter-spacing: 0;
+              color: var(--text-faint);
+              font-size: 9px;
+            "
+            >(optional)</span
+          >
+        </div>
         <div class="slug-box">
           <span class="slug-prefix" id="slugPrefix">/ </span>
           <input
             id="slug"
             class="slug-input"
             type="text"
-            placeholder="slug"
+            placeholder="auto-generate"
             maxlength="128"
             autocomplete="off"
             spellcheck="false"

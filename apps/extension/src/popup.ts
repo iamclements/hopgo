@@ -100,6 +100,8 @@ interface LinkWithClicks extends Link {
   clicks: number;
 }
 
+const COPY_ICON = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+
 function renderLinks(links: LinkWithClicks[]): void {
   linksEl.innerHTML = "";
   if (links.length === 0) {
@@ -111,20 +113,43 @@ function renderLinks(links: LinkWithClicks[]): void {
   }
   for (const link of links) {
     const host = domainHost(shortDomain);
+    const shortUrl = buildShortUrl(shortDomain, link.slug);
+
     const row = document.createElement("div");
     row.className = "link-row";
-    row.title = link.url;
 
     const dot = document.createElement("span");
     dot.className = "link-dot";
+
+    // Inner content column: short URL row + destination row
+    const content = document.createElement("div");
+    content.className = "link-content";
+
+    const top = document.createElement("div");
+    top.className = "link-top";
 
     const shortSpan = document.createElement("span");
     shortSpan.className = "link-short";
     shortSpan.innerHTML = `${escHtml(host)}/<span class="slug-part">${escHtml(link.slug)}</span>`;
 
+    const copyIcon = document.createElement("span");
+    copyIcon.className = "link-copy";
+    copyIcon.innerHTML = COPY_ICON;
+    copyIcon.title = "Click to copy";
+
     const clicks = document.createElement("span");
     clicks.className = "link-clicks";
-    clicks.textContent = link.clicks > 0 ? String(link.clicks) : "";
+    if (link.clicks > 0) clicks.textContent = `${link.clicks}`;
+
+    top.append(shortSpan, copyIcon, clicks);
+
+    // Destination URL — strip protocol for display
+    const dest = document.createElement("div");
+    dest.className = "link-dest";
+    dest.textContent = link.url.replace(/^https?:\/\//, "");
+    dest.title = link.url;
+
+    content.append(top, dest);
 
     const del = document.createElement("button");
     del.className = "link-del";
@@ -136,13 +161,13 @@ function renderLinks(links: LinkWithClicks[]): void {
     });
 
     row.addEventListener("click", () => {
-      void copyText(buildShortUrl(shortDomain, link.slug)).then(() => {
+      void copyText(shortUrl).then(() => {
         setMsg(`Copied ${host}/${link.slug}`, "success");
         setTimeout(clearMsg, 2000);
       });
     });
 
-    row.append(dot, shortSpan, clicks, del);
+    row.append(dot, content, del);
     linksEl.appendChild(row);
   }
 }

@@ -3,9 +3,18 @@
   "name": "Hopgo",
   "version": "0.0.0",
   "description": "Shorten the current tab to a short link on your own Cloudflare domain.",
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "128": "icon-128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Shorten this tab with Hopgo"
+    "default_title": "Shorten this tab with Hopgo",
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png"
+    }
   },
   "options_page": "options.html",
   "background": { "service_worker": "background.js", "type": "module" },

@@ -2,6 +2,7 @@ import {
   DEFAULT_TENANT_ID,
   deleteLink,
   generateUniqueSlug,
+  getClicks,
   isValidSlug,
   type Link,
   linkExists,
@@ -12,234 +13,310 @@ import { clientFor, currentConnection, disconnect } from "./session.js";
 import { getCachedLinks, getShortDomain, setCachedLinks } from "./storage.js";
 import { buildShortUrl } from "./util.js";
 
-const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
+const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
-const currentEl = $<HTMLDivElement>("current");
+// Screens
+const screenSignedOut = $("screenSignedOut");
+const screenNoDomain = $("screenNoDomain");
+const screenReady = $("screenReady");
+
+// Header
+const domainPillEl = $("domainPill");
+
+// Sign-out screen
 const connectBtn = $<HTMLButtonElement>("connect");
-const signoutBtn = $<HTMLButtonElement>("signout");
+
+// No-domain screen
+const openSettingsBtn = $<HTMLButtonElement>("openSettings");
+const signoutNoDomainBtn = $<HTMLButtonElement>("signoutNoDomain");
+
+// Ready screen
+const currentTabEl = $("currentTab");
+const slugPrefixEl = $("slugPrefix");
 const slugEl = $<HTMLInputElement>("slug");
 const shortenBtn = $<HTMLButtonElement>("shorten");
-const msgEl = $<HTMLDivElement>("msg");
-const resultEl = $<HTMLDivElement>("result");
-const shortEl = $<HTMLElement>("short");
-const copyBtn = $<HTMLButtonElement>("copy");
-const linksEl = $<HTMLUListElement>("links");
+const msgEl = $("msg");
+const linksEl = $("links");
+const signoutBtn = $<HTMLButtonElement>("signout");
 
 let shortDomain = "";
+let currentTabUrl = "";
 
-function setMsg(text: string, isError = false): void {
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+function showScreen(name: "signedOut" | "noDomain" | "ready"): void {
+  screenSignedOut.classList.toggle("active", name === "signedOut");
+  screenNoDomain.classList.toggle("active", name === "noDomain");
+  screenReady.classList.toggle("active", name === "ready");
+}
+
+function setMsg(text: string, kind: "info" | "error" | "success" = "info"): void {
   msgEl.textContent = text;
-  msgEl.className = isError ? "msg error" : "msg";
+  msgEl.className = `msg visible ${kind === "info" ? "" : kind}`;
 }
 
-function show(el: HTMLElement, visible: boolean): void {
-  el.classList.toggle("hidden", !visible);
+function clearMsg(): void {
+  msgEl.className = "msg";
+  msgEl.textContent = "";
 }
 
-async function currentTabUrl(): Promise<string | undefined> {
+/** Best-effort hostname of the short domain for the pill, e.g. "go.acme.dev". */
+function domainHost(d: string): string {
+  try {
+    return new URL(d).hostname;
+  } catch {
+    return d.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  }
+}
+
+/** Derive a slug suggestion from a URL: last non-empty path segment, slugified. */
+function slugFromUrl(url: string): string {
+  try {
+    const segments = new URL(url).pathname.split("/").filter(Boolean);
+    const last = segments[segments.length - 1] ?? "";
+    return last
+      .replace(/\.[^.]+$/, "") // strip file extension
+      .replace(/[^a-z0-9]+/gi, "-")
+      .toLowerCase()
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 64);
+  } catch {
+    return "";
+  }
+}
+
+async function getTabUrl(): Promise<string> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  return tab?.url;
+  return tab?.url ?? "";
 }
 
-async function copy(text: string): Promise<void> {
+async function copyText(text: string): Promise<void> {
   await navigator.clipboard.writeText(text);
-  setMsg(`Copied ${text}`);
 }
 
-function renderLinks(links: Link[]): void {
+// ── Links rendering ───────────────────────────────────────────────────────
+
+interface LinkWithClicks extends Link {
+  clicks: number;
+}
+
+function renderLinks(links: LinkWithClicks[]): void {
   linksEl.innerHTML = "";
   if (links.length === 0) {
-    const li = document.createElement("li");
-    li.textContent = "No links yet.";
-    li.style.opacity = "0.6";
-    linksEl.appendChild(li);
+    const el = document.createElement("div");
+    el.className = "no-links";
+    el.textContent = "No links yet.";
+    linksEl.appendChild(el);
     return;
   }
   for (const link of links) {
-    const shortUrl = buildShortUrl(shortDomain, link.slug);
-    const li = document.createElement("li");
+    const host = domainHost(shortDomain);
+    const row = document.createElement("div");
+    row.className = "link-row";
+    row.title = link.url;
 
-    const top = document.createElement("div");
-    top.className = "recent-top";
-    const a = document.createElement("a");
-    a.href = shortUrl;
-    a.target = "_blank";
-    a.rel = "noreferrer";
-    a.textContent = shortUrl;
+    const dot = document.createElement("span");
+    dot.className = "link-dot";
+
+    const shortSpan = document.createElement("span");
+    shortSpan.className = "link-short";
+    shortSpan.innerHTML = `${escHtml(host)}/<span class="slug-part">${escHtml(link.slug)}</span>`;
+
+    const clicks = document.createElement("span");
+    clicks.className = "link-clicks";
+    clicks.textContent = link.clicks > 0 ? String(link.clicks) : "";
+
     const del = document.createElement("button");
-    del.className = "secondary";
-    del.textContent = "Delete";
-    del.addEventListener("click", () => {
-      if (confirm(`Delete ${shortUrl}?`)) void removeLink(link.slug);
-    });
-    top.append(a, del);
-
-    // Target URL, truncated by default with a Show more / Show less toggle.
-    const target = document.createElement("div");
-    target.className = "recent-target";
-    target.textContent = link.url;
-    target.title = link.url;
-
-    const toggle = document.createElement("button");
-    toggle.className = "link recent-toggle";
-    toggle.textContent = "Show more";
-    toggle.addEventListener("click", () => {
-      const expanded = target.classList.toggle("expanded");
-      toggle.textContent = expanded ? "Show less" : "Show more";
+    del.className = "link-del";
+    del.textContent = "×";
+    del.title = `Delete ${link.slug}`;
+    del.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (confirm(`Delete ${host}/${link.slug}?`)) void removeLink(link.slug);
     });
 
-    li.append(top, target, toggle);
-    linksEl.appendChild(li);
+    row.addEventListener("click", () => {
+      void copyText(buildShortUrl(shortDomain, link.slug)).then(() => {
+        setMsg(`Copied ${host}/${link.slug}`, "success");
+        setTimeout(clearMsg, 2000);
+      });
+    });
 
-    // Only offer the toggle when the URL is actually clipped.
-    if (target.scrollWidth <= target.clientWidth) {
-      toggle.classList.add("hidden");
-    }
+    row.append(dot, shortSpan, clicks, del);
+    linksEl.appendChild(row);
   }
 }
 
-/**
- * Render the cached list instantly, then refresh from KV in the background and
- * update the cache. KV list returns keys only, so the fresh fetch reads each link
- * (slower); the cache makes opening the popup feel instant.
- */
+function escHtml(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 async function loadLinks(): Promise<void> {
   const connection = await currentConnection();
   if (!connection) return;
+  const client = clientFor(connection);
 
+  // Show cache immediately for instant feel.
   const cached = await getCachedLinks();
-  if (cached.length) renderLinks(cached);
+  if (cached.length) {
+    renderLinks(cached.map((l) => ({ ...l, clicks: 0 })));
+  }
 
   try {
-    const { links } = await listLinks(clientFor(connection));
+    const { links } = await listLinks(client);
     links.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
-    renderLinks(links);
+
+    // Fetch click counts in parallel.
+    const clicks = await Promise.all(links.map((l) => getClicks(client, l.slug)));
+    const withClicks: LinkWithClicks[] = links.map((l, i) => ({ ...l, clicks: clicks[i] ?? 0 }));
+
+    renderLinks(withClicks);
     await setCachedLinks(links);
   } catch (err) {
-    setMsg(err instanceof Error ? err.message : "Failed to load links", true);
+    setMsg(err instanceof Error ? err.message : "Failed to load links", "error");
   }
 }
 
 async function removeLink(slug: string): Promise<void> {
   const connection = await currentConnection();
-  if (!connection) {
-    setMsg("Sign in with Cloudflare first.", true);
-    return;
-  }
+  if (!connection) return;
   try {
     await deleteLink(clientFor(connection), slug);
-    setMsg(`Deleted ${slug}`);
+    setMsg(`Deleted ${slug}`, "info");
+    setTimeout(clearMsg, 2000);
     await loadLinks();
   } catch (err) {
-    setMsg(err instanceof Error ? err.message : "Failed to delete", true);
+    setMsg(err instanceof Error ? err.message : "Failed to delete", "error");
   }
 }
 
-async function shorten(url: string): Promise<void> {
+// ── Shorten ───────────────────────────────────────────────────────────────
+
+async function shorten(): Promise<void> {
   const connection = await currentConnection();
-  if (!connection) {
-    setMsg("Sign in with Cloudflare first.", true);
-    return;
-  }
-  if (!shortDomain) {
-    setMsg("Set your short-link domain in Settings first.", true);
-    return;
-  }
+  if (!connection) return;
 
   const customSlug = slugEl.value.trim();
   if (customSlug && !isValidSlug(customSlug)) {
-    setMsg("Slug must be 1-128 chars of letters, numbers, - or _", true);
+    setMsg("Slug: letters, numbers, - or _ only", "error");
     return;
   }
 
   shortenBtn.disabled = true;
-  setMsg("Shortening...");
+  shortenBtn.innerHTML = '<span class="spinner"></span>Shortening…';
+  clearMsg();
+
   try {
     const client = clientFor(connection);
     let slug: string;
+
     if (customSlug) {
       if (await linkExists(client, customSlug)) {
-        setMsg(`"${customSlug}" is already taken.`, true);
+        setMsg(`"${customSlug}" is already taken`, "error");
         return;
       }
       slug = customSlug;
     } else {
-      slug = await generateUniqueSlug((candidate) => linkExists(client, candidate));
+      slug = await generateUniqueSlug((c) => linkExists(client, c));
     }
+
     const link: Link = {
       slug,
-      url,
+      url: currentTabUrl,
       tenantId: DEFAULT_TENANT_ID,
       createdAt: new Date().toISOString(),
     };
     await putLink(client, link);
 
     const shortUrl = buildShortUrl(shortDomain, slug);
-    shortEl.textContent = shortUrl;
-    show(resultEl, true);
+    await copyText(shortUrl);
     slugEl.value = "";
-    await copy(shortUrl);
+
+    setMsg(`Copied ${domainHost(shortDomain)}/${slug}`, "success");
+    setTimeout(clearMsg, 3000);
     await loadLinks();
   } catch (err) {
-    setMsg(err instanceof Error ? err.message : "Failed to shorten", true);
+    setMsg(err instanceof Error ? err.message : "Failed to shorten", "error");
   } finally {
     shortenBtn.disabled = false;
+    shortenBtn.textContent = "Shorten";
   }
 }
+
+// ── Render / state machine ────────────────────────────────────────────────
 
 async function render(): Promise<void> {
   const connection = await currentConnection();
-  const connected = connection !== null;
-  show(connectBtn, !connected);
-  show(signoutBtn, connected);
-  show(shortenBtn, connected);
-  show(slugEl, connected);
+  currentTabUrl = await getTabUrl();
 
-  const url = await currentTabUrl();
-  currentEl.textContent = url ?? "No active tab";
-
-  if (connected) {
-    shortDomain = await getShortDomain();
-    if (!shortDomain) setMsg("Set your short-link domain in Settings.", true);
-    await loadLinks();
-  } else {
-    linksEl.innerHTML = "";
-    setMsg("Sign in with Cloudflare to start shortening.");
+  if (!connection) {
+    showScreen("signedOut");
+    return;
   }
 
-  shortenBtn.onclick = () => {
-    if (url) void shorten(url);
-  };
+  shortDomain = await getShortDomain();
+  if (!shortDomain) {
+    showScreen("noDomain");
+    return;
+  }
+
+  // Show the ready screen.
+  const host = domainHost(shortDomain);
+  domainPillEl.textContent = host;
+  domainPillEl.style.display = "";
+  slugPrefixEl.textContent = `${host} / `;
+  currentTabEl.textContent = currentTabUrl || "No active tab";
+  slugEl.value = currentTabUrl ? (slugFromUrl(currentTabUrl) ?? "") : "";
+  slugEl.focus();
+
+  showScreen("ready");
+  void loadLinks();
 }
 
+// ── Event listeners ───────────────────────────────────────────────────────
+
 connectBtn.addEventListener("click", () => {
-  setMsg("Opening Cloudflare sign-in...");
-  // The flow runs in the background worker because this popup closes when the
-  // Cloudflare window takes focus. If the popup survives, this callback updates it;
-  // if not, reopening the popup shows the connected state.
+  connectBtn.disabled = true;
+  connectBtn.innerHTML = '<span class="spinner"></span>Opening Cloudflare…';
   chrome.runtime.sendMessage({ type: "connect" }, (res?: { ok: boolean; error?: string }) => {
+    connectBtn.disabled = false;
+    connectBtn.textContent = "Sign in with Cloudflare";
     if (chrome.runtime.lastError || !res) return;
     if (res.ok) {
-      setMsg("Connected.");
       void render();
     } else {
-      setMsg(res.error || "Sign-in failed", true);
+      const s = screenSignedOut.querySelector(".signout-body");
+      if (s) s.textContent = res.error ?? "Sign-in failed. Please try again.";
     }
   });
 });
 
-copyBtn.addEventListener("click", () => {
-  if (shortEl.textContent) void copy(shortEl.textContent);
+openSettingsBtn.addEventListener("click", () => {
+  chrome.runtime.openOptionsPage();
+});
+
+signoutNoDomainBtn.addEventListener("click", async () => {
+  await disconnect();
+  domainPillEl.style.display = "none";
+  await render();
 });
 
 signoutBtn.addEventListener("click", async () => {
   await disconnect();
-  setMsg("Signed out.");
+  domainPillEl.style.display = "none";
   await render();
 });
 
 $<HTMLButtonElement>("settings").addEventListener("click", () => {
   chrome.runtime.openOptionsPage();
+});
+
+shortenBtn.addEventListener("click", () => {
+  if (currentTabUrl) void shorten();
+});
+
+slugEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") void shorten();
 });
 
 void render();

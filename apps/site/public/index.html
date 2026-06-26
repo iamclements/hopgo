@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hopgo: Your links. Your domain. Nothing to host.</title>
+    <meta
+      name="description"
+      content="Hopgo is a branded URL shortener that runs on your own Cloudflare account via a Chrome extension. No server, no container. Your short links live in your KV, served from your domain at Cloudflare's edge."
+    />
+    <meta name="theme-color" content="#07090e" />
+    <link rel="canonical" href="https://hopgo.co/" />
+
+    <!-- Icons -->
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/assets/favicon-16.png" sizes="16x16" type="image/png" />
+    <link rel="apple-touch-icon" href="/assets/icon-128.png" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hopgo.co/" />
+    <meta property="og:title" content="Hopgo: Your links. Your domain. Nothing to host." />
+    <meta
+      property="og:description"
+      content="A branded URL shortener that runs on your own Cloudflare account. Nothing to host. Nothing of yours lives with us."
+    />
+    <meta property="og:image" content="https://hopgo.co/assets/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Hopgo: Your links. Your domain. Nothing to host." />
+    <meta
+      name="twitter:description"
+      content="A branded URL shortener that runs on your own Cloudflare account. Nothing to host."
+    />
+    <meta name="twitter:image" content="https://hopgo.co/assets/og-image.png" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="grid-layer"></div>
+
+    <!-- ───── NAV ───── -->
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="#" class="nav-logo" aria-label="Hopgo home">
+          <svg width="26" height="26" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+            <path
+              d="M10 48 Q 32 4 54 48"
+              stroke="#3b82f6"
+              stroke-width="8"
+              stroke-linecap="round"
+            />
+            <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+          </svg>
+          <span class="wordmark">hop<span class="go">go</span></span>
+        </a>
+        <div class="nav-links">
+          <a href="#how">How it works</a>
+          <a href="#why">Why Hopgo</a>
+          <a href="#features">Features</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="nav-spacer"></div>
+        <a class="nav-gh" href="https://github.com/iamclements/hopgo" rel="noopener">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"
+            />
+          </svg>
+          GitHub
+        </a>
+        <span class="nav-cta" role="link" aria-disabled="true">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5L12 14.5l-4.9 2.7.9-5.5L4 7.8l5.5-.8z" />
+          </svg>
+          Add to Chrome
+          <span class="soon">Coming soon</span>
+        </span>
+      </div>
+    </nav>
+
+    <!-- ───── HERO ───── -->
+    <section class="hero">
+      <div class="hero-glow"></div>
+
+      <div class="hero-left">
+        <div class="label anim">Chrome Extension · Cloudflare Edge</div>
+        <h1 class="anim-2">Your links.<br />Your domain.<br />Nothing to host.</h1>
+        <p class="hero-sub anim-3">
+          Hopgo is a branded URL shortener that runs on your own Cloudflare account. No server. No
+          container. Your short links live in your KV, served from your domain at Cloudflare's edge.
+        </p>
+        <div class="hero-ctas anim-3">
+          <span class="btn btn-primary" role="link" aria-disabled="true">
+            Add to Chrome
+            <span class="soon">Coming soon</span>
+          </span>
+          <a class="btn btn-ghost" href="https://github.com/iamclements/hopgo" rel="noopener">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"
+              />
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+        <div class="hero-badges">
+          <span>Free forever</span>
+          <span class="dot">·</span>
+          <span>MIT license</span>
+          <span class="dot">·</span>
+          <span>Open source</span>
+        </div>
+      </div>
+
+      <!-- popup mockup -->
+      <div class="hero-right">
+        <div class="hero-right-glow"></div>
+        <div class="popup">
+          <div class="popup-head">
+            <svg width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+              <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+              <path
+                d="M10 48 Q 32 4 54 48"
+                stroke="#3b82f6"
+                stroke-width="8"
+                stroke-linecap="round"
+              />
+              <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+            </svg>
+            <span class="wordmark">hop<span class="go">go</span></span>
+            <span class="popup-pill">go.acme.dev</span>
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#3f4a58"
+              stroke-width="2"
+              stroke-linecap="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"
+              />
+            </svg>
+          </div>
+          <div class="popup-field">
+            <div class="popup-cap">Current tab</div>
+            <div class="popup-tab">github.com/org/hopgo/blob/main/README.md</div>
+          </div>
+          <div class="popup-slug">
+            <div class="popup-cap">Your short link</div>
+            <div class="popup-slug-box">
+              <span class="popup-slug-prefix">go.acme.dev /</span>
+              <span class="popup-slug-val">readme</span>
+              <span class="popup-cursor"></span>
+            </div>
+          </div>
+          <div class="popup-btn-wrap">
+            <div class="popup-btn">Shorten</div>
+          </div>
+          <div class="popup-divider"></div>
+          <div class="popup-recent-cap"><div class="popup-cap">Recent</div></div>
+          <div class="popup-link">
+            <div class="dot"></div>
+            <span class="popup-link-url">go.acme.dev/<span class="slug">launch</span></span>
+            <span class="popup-link-count">248</span>
+          </div>
+          <div class="popup-link">
+            <div class="dot"></div>
+            <span class="popup-link-url">go.acme.dev/<span class="slug">docs</span></span>
+            <span class="popup-link-count">89</span>
+          </div>
+        </div>
+
+        <div class="transform-chip">
+          <span class="from">github.com/org/hopgo/blob/main/README.md</span>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#3b82f6"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+          <span class="to">go.acme.dev/readme</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── HOW IT WORKS ───── -->
+    <section id="how" class="section bordered">
+      <div class="wrap">
+        <div class="label">How it works</div>
+        <h2>Three steps. No server at any of them.</h2>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-num">01</div>
+            <div class="card-title">Install</div>
+            <p>
+              Add Hopgo to Chrome from the Web Store. No account needed yet. The extension is open
+              source: read it before you trust it.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-num">02</div>
+            <div class="card-title">Sign in with Cloudflare</div>
+            <p>
+              OAuth with PKCE: no client secret, no password stored. Pick the domain you want to
+              use. Hopgo deploys the redirect Worker and DNS config automatically.
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-num">03</div>
+            <div class="card-title">Shorten any tab</div>
+            <p>
+              Click the extension on any tab. Edit the slug if you want. Hit Shorten. Your short
+              link is live at Cloudflare's edge worldwide in seconds.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── WHY HOPGO ───── -->
+    <section id="why" class="section alt">
+      <div class="wrap">
+        <div class="label">Why Hopgo</div>
+        <h2>Other shorteners make you choose.<br />Server headache or their infrastructure.</h2>
+        <p class="section-lead">
+          Some make you run and patch a server. Others keep your links on their machines. Hopgo does
+          neither.
+        </p>
+        <div class="grid-3">
+          <div class="card why-card">
+            <div class="icon-tile">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3b82f6"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="2" y="3" width="20" height="5" rx="1" />
+                <rect x="2" y="10" width="20" height="5" rx="1" />
+                <line x1="2" y1="17" x2="22" y2="7" />
+              </svg>
+            </div>
+            <div class="card-title">Nothing to host</div>
+            <p>
+              No server. No container. No VPS to patch at 2am. The extension runs in your browser;
+              the redirect Worker runs in Cloudflare's infrastructure, not yours.
+            </p>
+          </div>
+          <div class="card why-card">
+            <div class="icon-tile">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3b82f6"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 2H3v16h5v4l4-4h9V2z" />
+                <path d="M7 10h10M7 6h4" />
+              </svg>
+            </div>
+            <div class="card-title">You own everything</div>
+            <p>
+              Links live in your Cloudflare KV. The Worker runs on your domain. Your account, your
+              data. Revoke Hopgo's OAuth token anytime: we lose access instantly and completely.
+            </p>
+          </div>
+          <div class="card why-card">
+            <div class="icon-tile">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3b82f6"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <path
+                  d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"
+                />
+              </svg>
+            </div>
+            <div class="card-title">Edge-fast, always up</div>
+            <p>
+              Redirects are Cloudflare Workers: sub-millisecond globally, no cold starts. If Hopgo
+              shuts down tomorrow, your links keep working. Zero dependency on our infrastructure.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── FEATURES ───── -->
+    <section id="features" class="section">
+      <div class="wrap">
+        <div class="label">Features</div>
+        <h2>Everything in the popup.</h2>
+        <div class="grid-2">
+          <div class="card feat-card">
+            <div class="feat-num">01</div>
+            <div>
+              <div class="feat-title">Custom slugs</div>
+              <p>
+                Set your own path on every link. <span class="mono">go.yours.dev/launch</span>
+                instead of a random string. Edit the slug in the popup before shortening.
+              </p>
+            </div>
+          </div>
+          <div class="card feat-card">
+            <div class="feat-num">02</div>
+            <div>
+              <div class="feat-title">One-click domain setup</div>
+              <p>
+                Pick any domain in your Cloudflare account. Hopgo auto-deploys the redirect Worker
+                and configures DNS. No terminal, no YAML, no Wrangler.
+              </p>
+            </div>
+          </div>
+          <div class="card feat-card">
+            <div class="feat-num">03</div>
+            <div>
+              <div class="feat-title">Click counts</div>
+              <p>
+                Track how many times each short link has been clicked, right from the popup. Counts
+                are stored in your Cloudflare KV, not on our servers.
+              </p>
+            </div>
+          </div>
+          <div class="card feat-card">
+            <div class="feat-num">04</div>
+            <div>
+              <div class="feat-title">Manage from the popup</div>
+              <p>
+                View, copy, and open all your short links without leaving your browser. No dashboard
+                to log into. No context switch.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── SECURITY ───── -->
+    <section id="security" class="security">
+      <div class="wrap security-inner">
+        <div class="security-left">
+          <div class="label">Security and privacy</div>
+          <h2>We cannot see your links.<br />By design.</h2>
+          <p>
+            Hopgo's access token lives in your browser. We never proxy your redirects. We have no
+            database of your links. The code is public: verify it yourself.
+          </p>
+          <a class="privacy-link" href="/privacy/"
+            >Privacy policy
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+        <div class="security-right">
+          <div class="check-card">
+            <div class="check-tile">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3b82f6"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="check-title">OAuth with PKCE</div>
+              <p>
+                No client secret. No password stored. The extension uses PKCE for the Cloudflare
+                OAuth flow, which is the secure standard for public clients.
+              </p>
+            </div>
+          </div>
+          <div class="check-card">
+            <div class="check-tile">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3b82f6"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="check-title">Token stays in your browser</div>
+              <p>
+                Your Cloudflare access token is stored in Chrome's extension storage. It is never
+                sent to Hopgo servers. You revoke it from the popup or from Cloudflare's dashboard.
+              </p>
+            </div>
+          </div>
+          <div class="check-card">
+            <div class="check-tile">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#3b82f6"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div>
+              <div class="check-title">Open source, MIT</div>
+              <p>
+                Every line is on GitHub. You can audit it, fork it, or self-host the OAuth relay. We
+                ship what the repo contains.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── FAQ ───── -->
+    <section id="faq" class="section">
+      <div class="faq-wrap">
+        <div class="label">FAQ</div>
+        <h2>Common questions.</h2>
+        <div class="faq-list">
+          <details>
+            <summary>
+              Do I need a domain on Cloudflare?
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#4a5468"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Yes. Hopgo deploys a Cloudflare Worker to serve your short links, so the domain must
+              be managed by Cloudflare (using Cloudflare's nameservers). The free Cloudflare plan
+              works fine.
+            </div>
+          </details>
+          <details>
+            <summary>
+              Is it free?
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#4a5468"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Yes. Hopgo is MIT-licensed and free forever. The redirect Worker runs on Cloudflare's
+              free tier (100,000 requests/day included). You pay nothing to Hopgo and nothing to
+              Cloudflare for normal usage.
+            </div>
+          </details>
+          <details>
+            <summary>
+              Where do my links live?
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#4a5468"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              In your Cloudflare KV namespace, inside your own Cloudflare account. Hopgo never
+              stores, reads, or transmits your links. If you delete your KV namespace, your links
+              are gone: not ours to keep.
+            </div>
+          </details>
+          <details>
+            <summary>
+              What happens if Hopgo shuts down?
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#4a5468"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </summary>
+            <div class="faq-answer">
+              Your links keep working. The Worker running on your domain has zero dependency on
+              Hopgo's infrastructure. The only thing that would break is creating new links via the
+              extension, and since it's open source, you can fork it.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── BOTTOM CTA ───── -->
+    <section class="cta">
+      <div class="cta-glow"></div>
+      <div class="cta-inner">
+        <svg
+          class="cta-mark"
+          width="56"
+          height="56"
+          viewBox="0 0 64 64"
+          fill="none"
+          aria-hidden="true"
+        >
+          <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+          <path d="M10 48 Q 32 4 54 48" stroke="#3b82f6" stroke-width="8" stroke-linecap="round" />
+          <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+        </svg>
+        <h2>Own your short links.</h2>
+        <p>Free. No server. Your domain, your Cloudflare account, your data.</p>
+        <div class="cta-buttons">
+          <span class="btn btn-primary" role="link" aria-disabled="true">
+            Add to Chrome
+            <span class="soon">Coming soon</span>
+          </span>
+          <a class="btn btn-ghost" href="https://github.com/iamclements/hopgo" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path
+                d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.202 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"
+              />
+            </svg>
+            View on GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───── FOOTER ───── -->
+    <footer class="footer">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg width="22" height="22" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+              <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+              <path
+                d="M10 48 Q 32 4 54 48"
+                stroke="#3b82f6"
+                stroke-width="8"
+                stroke-linecap="round"
+              />
+              <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+            </svg>
+            <span class="wordmark">hop<span class="go">go</span></span>
+          </div>
+          <p class="footer-tag">
+            Your branded URL shortener. Your Cloudflare account. Nothing to host.
+          </p>
+        </div>
+        <div class="footer-cols">
+          <div>
+            <div class="footer-col-title">Product</div>
+            <div class="footer-col-links">
+              <a href="https://github.com/iamclements/hopgo" rel="noopener">GitHub</a>
+              <a href="https://chrome.google.com/webstore" rel="noopener">Chrome Web Store</a>
+              <a href="#how">How it works</a>
+            </div>
+          </div>
+          <div>
+            <div class="footer-col-title">Legal</div>
+            <div class="footer-col-links">
+              <a href="/privacy/">Privacy Policy</a>
+              <a href="/security/">Security</a>
+            </div>
+          </div>
+          <div>
+            <div class="footer-col-title">Contact</div>
+            <div class="footer-col-links">
+              <a class="mono" href="mailto:contact@hopgo.co">contact@hopgo.co</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-rule">
+        <span>© 2026 hopgo.co</span>
+        <span class="license">MIT LICENSE</span>
+      </div>
+    </footer>
+  </body>
+</html>

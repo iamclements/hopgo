@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy Policy: Hopgo</title>
+    <meta
+      name="description"
+      content="Hopgo does not run servers and does not collect your data. The extension talks directly to Cloudflare using an authorization you grant."
+    />
+    <meta name="theme-color" content="#07090e" />
+    <link rel="canonical" href="https://hopgo.co/privacy/" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="grid-layer"></div>
+
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo" aria-label="Hopgo home">
+          <svg width="26" height="26" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+            <path
+              d="M10 48 Q 32 4 54 48"
+              stroke="#3b82f6"
+              stroke-width="8"
+              stroke-linecap="round"
+            />
+            <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+          </svg>
+          <span class="wordmark">hop<span class="go">go</span></span>
+        </a>
+        <div class="nav-spacer"></div>
+        <span class="nav-cta" role="link" aria-disabled="true"
+          >Add to Chrome <span class="soon">Coming soon</span></span
+        >
+      </div>
+    </nav>
+
+    <main class="legal">
+      <a class="back" href="/">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to home
+      </a>
+
+      <h1>Privacy Policy</h1>
+      <div class="updated">Last updated: 2026-06-25</div>
+
+      <p>
+        Hopgo is a Chrome extension and open-source tool for creating short links on
+        <strong>your own</strong> Cloudflare account. This policy explains what data Hopgo handles.
+      </p>
+
+      <h2>The short version</h2>
+      <p>
+        Hopgo does not run any servers and does not collect, store, sell, or transmit your data to
+        us. The extension talks <strong>directly to Cloudflare</strong> using an authorization you
+        grant. Your links and your Cloudflare credentials never pass through any Hopgo-operated
+        service.
+      </p>
+
+      <h2>What Hopgo stores, and where</h2>
+      <ul>
+        <li>
+          <strong>Cloudflare OAuth access token</strong>: obtained when you click "Sign in with
+          Cloudflare" and stored locally in your browser via <code>chrome.storage.local</code>. It
+          is sent only to Cloudflare's API as a Bearer token. It is never sent anywhere else. No
+          refresh token is requested.
+        </li>
+        <li>
+          <strong>Your short-link domain and a cached copy of your link list</strong>: stored
+          locally in <code>chrome.storage.local</code> so the popup loads quickly. The authoritative
+          copy of your links lives in your own Cloudflare KV namespace.
+        </li>
+      </ul>
+      <p>
+        Hopgo requests these Cloudflare permissions, used only to manage your links and one-click
+        setup: Workers KV Storage, Workers Scripts, Workers Routes, Zone read, and DNS write.
+      </p>
+
+      <h2>What Hopgo does not do</h2>
+      <ul>
+        <li>No analytics, tracking, ads, or fingerprinting.</li>
+        <li>No remote Hopgo server receives your tokens, links, or browsing activity.</li>
+        <li>No selling or sharing of data with third parties.</li>
+      </ul>
+
+      <h2>Third parties</h2>
+      <p>
+        Hopgo communicates only with <strong>Cloudflare</strong> (<span class="mono"
+          >api.cloudflare.com</span
+        >
+        and <span class="mono">dash.cloudflare.com</span>), to which you authenticate directly.
+        Cloudflare's handling of your account data is governed by Cloudflare's own privacy policy.
+      </p>
+
+      <h2>Your control</h2>
+      <ul>
+        <li>Remove all locally stored data by signing out in the extension or uninstalling it.</li>
+        <li>
+          Revoke Hopgo's access anytime in your Cloudflare dashboard under Profile &gt; Access
+          Management &gt; Connected Applications.
+        </li>
+      </ul>
+
+      <h2>Contact</h2>
+      <p>Questions: <a href="mailto:contact@hopgo.co">contact@hopgo.co</a></p>
+    </main>
+  </body>
+</html>

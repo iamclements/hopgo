@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Security: Hopgo</title>
+    <meta
+      name="description"
+      content="How to report a vulnerability in Hopgo, plus the design notes that keep the blast radius of any compromise small."
+    />
+    <meta name="theme-color" content="#07090e" />
+    <link rel="canonical" href="https://hopgo.co/security/" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="grid-layer"></div>
+
+    <nav class="nav">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo" aria-label="Hopgo home">
+          <svg width="26" height="26" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+            <path
+              d="M10 48 Q 32 4 54 48"
+              stroke="#3b82f6"
+              stroke-width="8"
+              stroke-linecap="round"
+            />
+            <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+          </svg>
+          <span class="wordmark">hop<span class="go">go</span></span>
+        </a>
+        <div class="nav-spacer"></div>
+        <span class="nav-cta" role="link" aria-disabled="true"
+          >Add to Chrome <span class="soon">Coming soon</span></span
+        >
+      </div>
+    </nav>
+
+    <main class="legal">
+      <a class="back" href="/">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        Back to home
+      </a>
+
+      <h1>Security Policy</h1>
+
+      <h2>Reporting a vulnerability</h2>
+      <p>
+        Please report security issues privately. Do not open a public issue for vulnerabilities.
+      </p>
+      <ul>
+        <li>
+          Preferred: open a private report via GitHub Security Advisories (the "Report a
+          vulnerability" button under the repository's Security tab).
+        </li>
+        <li>Or email: <a href="mailto:contact@hopgo.co">contact@hopgo.co</a></li>
+      </ul>
+      <p>
+        Include steps to reproduce and the affected component (worker, extension, web, or shared).
+        We aim to acknowledge within a few days.
+      </p>
+
+      <h2>Scope and design notes</h2>
+      <p>Hopgo is built so that a compromise has a small blast radius:</p>
+      <ul>
+        <li>
+          <strong>No Hopgo server holds your data.</strong> The extension talks directly to the
+          Cloudflare API with an OAuth token that stays in your browser. Your links live in your own
+          Cloudflare KV.
+        </li>
+        <li>
+          <strong>Scoped OAuth, no secrets shipped.</strong> Sign-in uses a public OAuth client with
+          PKCE (no client secret). The token is scoped to Workers KV, Workers Scripts/Routes, Zone
+          read, and DNS write. Revoke it anytime in your Cloudflare dashboard under Connected
+          Applications.
+        </li>
+        <li>
+          <strong>The redirect data plane is independent.</strong> Once provisioned, redirects are
+          served by a Worker in your own account; they keep working even if the extension is
+          removed.
+        </li>
+      </ul>
+
+      <h2>Supported versions</h2>
+      <p>This project is pre-1.0. Only the latest release receives security fixes.</p>
+    </main>
+  </body>
+</html>

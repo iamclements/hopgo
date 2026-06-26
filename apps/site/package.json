@@ -1,0 +1,7 @@
+{
+  "name": "@hopgo/site",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Hopgo marketing site (static, deployed to GitHub Pages at hopgo.co).",
+  "type": "module"
+}

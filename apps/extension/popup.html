@@ -77,6 +77,30 @@
         white-space: nowrap;
       }
 
+      .domain-select {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--blue-bright);
+        background: rgba(37, 99, 235, 0.15);
+        border: none;
+        border-radius: 4px;
+        padding: 3px 22px 3px 8px;
+        letter-spacing: 0.03em;
+        max-width: 160px;
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 6px center;
+      }
+
+      .domain-select option {
+        background: var(--surface);
+        color: var(--text);
+      }
+
       .icon-btn {
         background: none;
         border: none;
@@ -522,6 +546,12 @@
       </svg>
       <span class="wordmark">hop<span class="go">go</span></span>
       <span class="domain-pill" id="domainPill" style="display: none"></span>
+      <select
+        class="domain-select"
+        id="domainSelect"
+        style="display: none"
+        aria-label="Active domain"
+      ></select>
       <button class="icon-btn" id="settings" title="Settings">
         <svg
           width="15"

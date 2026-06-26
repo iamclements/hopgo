@@ -33,12 +33,48 @@ export async function setCachedLinks(links: Link[]): Promise<void> {
   await chrome.storage.local.set({ linksCache: links });
 }
 
-/** The origin where the user's redirects are served, e.g. https://go.example.com. */
-export async function getShortDomain(): Promise<string> {
+/** All saved short-link domains, in the order they were added. */
+export async function getDomains(): Promise<string[]> {
+  const { domains } = await chrome.storage.local.get("domains");
+  if (Array.isArray(domains) && domains.length > 0) return domains as string[];
+  // Migrate legacy single-domain storage key.
   const { shortDomain } = await chrome.storage.local.get("shortDomain");
-  return (shortDomain as string) ?? "";
+  if (shortDomain) {
+    const migrated = [shortDomain as string];
+    await chrome.storage.local.set({ domains: migrated, activeDomain: shortDomain });
+    return migrated;
+  }
+  return [];
 }
 
-export async function setShortDomain(shortDomain: string): Promise<void> {
-  await chrome.storage.local.set({ shortDomain });
+export async function setDomains(domains: string[]): Promise<void> {
+  await chrome.storage.local.set({ domains });
+}
+
+/** The currently selected short-link domain. Falls back to the first saved domain. */
+export async function getActiveDomain(): Promise<string> {
+  const [{ activeDomain }, saved] = await Promise.all([
+    chrome.storage.local.get("activeDomain"),
+    getDomains(),
+  ]);
+  if (activeDomain && saved.includes(activeDomain as string)) return activeDomain as string;
+  return saved[0] ?? "";
+}
+
+export async function setActiveDomain(domain: string): Promise<void> {
+  await chrome.storage.local.set({ activeDomain: domain });
+}
+
+/** @deprecated Use getActiveDomain / setDomains instead. */
+export async function getShortDomain(): Promise<string> {
+  return getActiveDomain();
+}
+
+/** @deprecated Use setDomains / setActiveDomain instead. */
+export async function setShortDomain(domain: string): Promise<void> {
+  const existing = await getDomains();
+  if (!existing.includes(domain)) {
+    await setDomains([...existing, domain]);
+  }
+  await setActiveDomain(domain);
 }

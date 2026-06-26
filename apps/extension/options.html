@@ -244,6 +244,72 @@
         color: #4ade80;
       }
 
+      /* ── Saved domains list ── */
+      .saved-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 10px;
+        border-radius: 6px;
+        background: var(--surface-2);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        margin-bottom: 6px;
+      }
+
+      .saved-row.saved-active {
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+
+      .saved-label {
+        flex: 1;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text);
+        text-align: left;
+        padding: 0;
+      }
+
+      .saved-row.saved-active .saved-label {
+        color: var(--blue-bright);
+      }
+
+      .saved-label::before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--text-faint);
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      .saved-row.saved-active .saved-label::before {
+        background: var(--blue-bright);
+      }
+
+      .saved-del {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--text-faint);
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition:
+          color 0.15s,
+          background 0.15s;
+      }
+
+      .saved-del:hover {
+        color: #f87171;
+        background: rgba(248, 113, 113, 0.1);
+      }
+
       /* ── Spinner ── */
       @keyframes spin {
         to {
@@ -302,26 +368,28 @@
         </div>
       </div>
 
-      <!-- Manual domain override -->
+      <!-- Saved domains -->
       <div class="card">
-        <div class="card-title">Short-link domain</div>
+        <div class="card-title">Your domains</div>
         <div class="card-desc">
-          The full URL where your Hopgo Worker is deployed. Set automatically by Deploy above, or
-          enter manually if you deployed the Worker yourself.
+          All configured short-link domains. Click a domain to make it active in the popup. The
+          active domain is shown with a blue indicator.
         </div>
+        <div id="savedDomains"></div>
 
-        <div class="field">
-          <label for="shortDomain">Domain URL</label>
-          <input
-            id="shortDomain"
-            type="url"
-            placeholder="https://go.yourdomain.com"
-            autocomplete="off"
-          />
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-primary" id="save">Save</button>
+        <div class="field" style="margin-top: 16px; margin-bottom: 0">
+          <label for="shortDomain">Add domain</label>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <input
+              id="shortDomain"
+              type="url"
+              placeholder="https://go.yourdomain.com"
+              autocomplete="off"
+              style="flex: 1"
+            />
+            <button class="btn btn-primary" id="save" style="white-space: nowrap">Add</button>
+          </div>
+          <div class="hint">Paste the full URL of any Hopgo Worker you have deployed.</div>
         </div>
       </div>
 

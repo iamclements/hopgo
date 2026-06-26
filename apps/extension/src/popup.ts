@@ -10,7 +10,13 @@ import {
   putLink,
 } from "@hopgo/shared";
 import { clientFor, currentConnection, disconnect } from "./session.js";
-import { getCachedLinks, getShortDomain, setCachedLinks } from "./storage.js";
+import {
+  getCachedLinks,
+  getActiveDomain,
+  getDomains,
+  setActiveDomain,
+  setCachedLinks,
+} from "./storage.js";
 import { buildShortUrl } from "./util.js";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -22,6 +28,7 @@ const screenReady = $("screenReady");
 
 // Header
 const domainPillEl = $("domainPill");
+const domainSelectEl = $<HTMLSelectElement>("domainSelect");
 
 // Sign-out screen
 const connectBtn = $<HTMLButtonElement>("connect");
@@ -279,16 +286,28 @@ async function render(): Promise<void> {
     return;
   }
 
-  shortDomain = await getShortDomain();
+  const [domains, activeDomain] = await Promise.all([getDomains(), getActiveDomain()]);
+  shortDomain = activeDomain;
   if (!shortDomain) {
     showScreen("noDomain");
     return;
   }
 
+  // Populate domain selector.
+  domainSelectEl.innerHTML = "";
+  for (const d of domains) {
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = domainHost(d);
+    opt.selected = d === shortDomain;
+    domainSelectEl.appendChild(opt);
+  }
+  domainSelectEl.style.display = domains.length > 1 ? "" : "none";
+  domainPillEl.style.display = domains.length > 1 ? "none" : "";
+
   // Show the ready screen.
   const host = domainHost(shortDomain);
-  domainPillEl.textContent = host;
-  domainPillEl.style.display = "";
+  if (domains.length === 1) domainPillEl.textContent = host;
   slugPrefixEl.textContent = `${host} / `;
   currentTabEl.textContent = currentTabUrl || "No active tab";
   slugEl.value = currentTabUrl ? (slugFromUrl(currentTabUrl) ?? "") : "";
@@ -334,6 +353,15 @@ signoutBtn.addEventListener("click", async () => {
 
 $<HTMLButtonElement>("settings").addEventListener("click", () => {
   chrome.runtime.openOptionsPage();
+});
+
+domainSelectEl.addEventListener("change", async () => {
+  const selected = domainSelectEl.value;
+  await setActiveDomain(selected);
+  shortDomain = selected;
+  const host = domainHost(selected);
+  slugPrefixEl.textContent = `${host} / `;
+  void loadLinks();
 });
 
 shortenBtn.addEventListener("click", () => {

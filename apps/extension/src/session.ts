@@ -58,12 +58,13 @@ export async function disconnect(): Promise<void> {
   await clearConnection();
 }
 
-/** A KV client bound to the connection's account, namespace, and access token. */
-export function clientFor(connection: Connection): CloudflareKvClient {
+/** A KV client bound to the connection's account and access token.
+ *  Pass namespaceId to override the connection's default (for per-domain namespaces). */
+export function clientFor(connection: Connection, namespaceId?: string): CloudflareKvClient {
   return new CloudflareKvClient({
     apiToken: connection.accessToken,
     accountId: connection.accountId,
-    namespaceId: connection.namespaceId,
+    namespaceId: namespaceId ?? connection.namespaceId,
     fetch: cfFetch,
   });
 }

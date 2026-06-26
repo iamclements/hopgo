@@ -33,6 +33,17 @@ export async function setCachedLinks(links: Link[]): Promise<void> {
   await chrome.storage.local.set({ linksCache: links });
 }
 
+/** Per-domain KV namespace IDs, keyed by the full domain URL (e.g. https://go.example.com). */
+export async function getDomainNamespaces(): Promise<Record<string, string>> {
+  const { domainNamespaces } = await chrome.storage.local.get("domainNamespaces");
+  return (domainNamespaces as Record<string, string>) ?? {};
+}
+
+export async function setDomainNamespace(domain: string, namespaceId: string): Promise<void> {
+  const existing = await getDomainNamespaces();
+  await chrome.storage.local.set({ domainNamespaces: { ...existing, [domain]: namespaceId } });
+}
+
 /** All saved short-link domains, in the order they were added. */
 export async function getDomains(): Promise<string[]> {
   const { domains } = await chrome.storage.local.get("domains");

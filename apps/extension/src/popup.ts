@@ -13,6 +13,7 @@ import { clientFor, currentConnection, disconnect } from "./session.js";
 import {
   getCachedLinks,
   getActiveDomain,
+  getDomainNamespaces,
   getDomains,
   setActiveDomain,
   setCachedLinks,
@@ -186,7 +187,12 @@ function escHtml(s: string): string {
 async function loadLinks(): Promise<void> {
   const connection = await currentConnection();
   if (!connection) return;
-  const client = clientFor(connection);
+
+  // Use the namespace for the active domain; fall back to the connection default for
+  // domains provisioned before per-domain namespaces were introduced.
+  const namespaces = await getDomainNamespaces();
+  const namespaceId = namespaces[shortDomain] ?? connection.namespaceId;
+  const client = clientFor(connection, namespaceId);
 
   // Show cache immediately for instant feel.
   const cached = await getCachedLinks();
@@ -213,7 +219,9 @@ async function removeLink(slug: string): Promise<void> {
   const connection = await currentConnection();
   if (!connection) return;
   try {
-    await deleteLink(clientFor(connection), slug);
+    const namespaces = await getDomainNamespaces();
+    const namespaceId = namespaces[shortDomain] ?? connection.namespaceId;
+    await deleteLink(clientFor(connection, namespaceId), slug);
     setMsg(`Deleted ${slug}`, "info");
     setTimeout(clearMsg, 2000);
     await loadLinks();
@@ -239,7 +247,9 @@ async function shorten(): Promise<void> {
   clearMsg();
 
   try {
-    const client = clientFor(connection);
+    const namespaces = await getDomainNamespaces();
+    const namespaceId = namespaces[shortDomain] ?? connection.namespaceId;
+    const client = clientFor(connection, namespaceId);
     let slug: string;
 
     if (customSlug) {

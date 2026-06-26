@@ -13,7 +13,7 @@ const msgEl = $<HTMLDivElement>("msg");
 
 function setMsg(text: string, isError = false): void {
   msgEl.textContent = text;
-  msgEl.className = isError ? "msg error" : "msg";
+  msgEl.className = `msg visible${isError ? " error" : ""}`;
 }
 
 let zones: CloudflareZone[] = [];

@@ -3,100 +3,330 @@
   <head>
     <meta charset="utf-8" />
     <title>Hopgo settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
-        color-scheme: light dark;
+        --bg: #07090e;
+        --surface: #0d111a;
+        --surface-2: #141822;
+        --border: #1b2230;
+        --border-soft: rgba(255, 255, 255, 0.07);
+        --text: #eef1f6;
+        --text-muted: #8a93a3;
+        --text-dim: #6b7a96;
+        --text-faint: #4a5468;
+        --blue: #2563eb;
+        --blue-bright: #3b82f6;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+        --sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
       }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
       body {
-        font:
-          14px/1.5 system-ui,
-          sans-serif;
-        max-width: 520px;
-        margin: 2rem auto;
-        padding: 0 1rem;
+        font-family: var(--sans);
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+        background-size: 72px 72px;
       }
+
+      .page {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 48px 32px 80px;
+      }
+
+      /* ── Header ── */
+      .head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 40px;
+      }
+
+      .wordmark {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+
+      .wordmark .go {
+        color: var(--blue-bright);
+      }
+
+      .head-sub {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        margin-left: 4px;
+      }
+
+      /* ── Card ── */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 28px 28px 24px;
+        margin-bottom: 16px;
+      }
+
+      .card-title {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin-bottom: 4px;
+      }
+
+      .card-desc {
+        font-size: 13px;
+        color: var(--text-muted);
+        line-height: 1.55;
+        margin-bottom: 20px;
+      }
+
+      /* ── Fields ── */
       label {
         display: block;
-        margin: 1rem 0 0.25rem;
-        font-weight: 600;
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        margin-bottom: 6px;
       }
-      input {
+
+      input,
+      select {
         width: 100%;
-        padding: 0.5rem 0.6rem;
-        border: 1px solid #8884;
+        padding: 9px 12px;
+        background: var(--surface-2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 6px;
-        font: inherit;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s;
+        appearance: none;
       }
+
+      input:focus,
+      select:focus {
+        border-color: rgba(59, 130, 246, 0.5);
+      }
+
+      input::placeholder {
+        color: var(--text-faint);
+      }
+
       .hint {
         font-size: 12px;
-        opacity: 0.7;
-        margin-top: 0.25rem;
+        color: var(--text-faint);
+        margin-top: 6px;
+        line-height: 1.5;
       }
-      .row {
+
+      .field {
+        margin-bottom: 20px;
+      }
+
+      .field:last-child {
+        margin-bottom: 0;
+      }
+
+      /* ── Domain row (subdomain + select + buttons) ── */
+      .domain-row {
         display: flex;
-        gap: 0.5rem;
+        gap: 8px;
         align-items: center;
       }
-      button {
-        margin-top: 1.25rem;
-        font: inherit;
-        border: 0;
+
+      .domain-row input {
+        width: 100px;
+        flex-shrink: 0;
+      }
+
+      .domain-sep {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text-faint);
+        flex-shrink: 0;
+      }
+
+      .domain-row select {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        padding: 9px 16px;
         border-radius: 6px;
-        padding: 0.5rem 0.9rem;
-        background: #2563eb;
-        color: #fff;
-        cursor: pointer;
-      }
-      button.secondary {
-        margin-top: 0;
-        background: #8883;
-        color: inherit;
-      }
-      .msg {
-        min-height: 18px;
+        font-family: var(--sans);
         font-size: 13px;
-        margin-top: 0.75rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          opacity 0.15s,
+          transform 0.15s;
       }
+
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+
+      .btn-primary {
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      .btn-ghost {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-muted);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-ghost:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .btn-row {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
+      /* ── Status ── */
+      .msg {
+        font-family: var(--mono);
+        font-size: 12px;
+        margin-top: 14px;
+        min-height: 18px;
+        color: var(--text-muted);
+        display: none;
+      }
+
+      .msg.visible {
+        display: block;
+      }
+
       .msg.error {
-        color: #dc2626;
+        color: #f87171;
+      }
+
+      .msg.success {
+        color: #4ade80;
+      }
+
+      /* ── Spinner ── */
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        vertical-align: -2px;
+        margin-right: 6px;
       }
     </style>
   </head>
   <body>
-    <h1>Hopgo settings</h1>
+    <div class="page">
+      <div class="head">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+          <path d="M10 48 Q 32 4 54 48" stroke="#3b82f6" stroke-width="8" stroke-linecap="round" />
+          <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+        </svg>
+        <span class="wordmark">hop<span class="go">go</span></span>
+        <span class="head-sub">Settings</span>
+      </div>
 
-    <label for="shortDomain">Your short-link domain</label>
-    <input id="shortDomain" type="url" placeholder="https://go.example.com" />
-    <div class="hint">
-      The domain where your Hopgo redirect Worker is deployed. Short links are built from this.
-    </div>
+      <!-- One-click domain setup -->
+      <div class="card">
+        <div class="card-title">One-click domain setup</div>
+        <div class="card-desc">
+          Deploy the Hopgo redirect Worker to a Cloudflare domain you own. Sign in via the popup
+          first, then load your domains and deploy.
+        </div>
 
-    <button id="save">Save</button>
+        <div class="field">
+          <label for="subdomain">Subdomain</label>
+          <div class="domain-row">
+            <input id="subdomain" type="text" value="go" placeholder="go" autocomplete="off" />
+            <span class="domain-sep">.</span>
+            <select id="zone">
+              <option value="">Load domains first</option>
+            </select>
+            <button class="btn btn-ghost" id="loadZones">Load</button>
+            <button class="btn btn-primary" id="deploy" disabled>Deploy</button>
+          </div>
+          <div class="hint">
+            Short links will be served from this subdomain, e.g. go.yourdomain.com. A proxied DNS
+            record is created automatically.
+          </div>
+        </div>
+      </div>
 
-    <h2 style="margin-top: 2rem; font-size: 1rem">One-click domain setup</h2>
-    <div class="hint">
-      Deploy the Hopgo redirect Worker to one of your Cloudflare domains. Sign in via the popup
-      first, then load your domains and deploy. This sets your short-link domain automatically.
-    </div>
-    <div class="row" style="margin-top: 0.5rem">
-      <input
-        id="subdomain"
-        type="text"
-        value="go"
-        placeholder="subdomain"
-        style="flex: 0 0 110px"
-      />
-      <span style="opacity: 0.6">.</span>
-      <select id="zone" style="flex: 1; padding: 0.5rem 0.6rem; border-radius: 6px"></select>
-      <button class="secondary" id="loadZones">Load domains</button>
-      <button id="deploy" disabled style="margin-top: 0">Deploy</button>
-    </div>
-    <div class="hint">
-      Links are served from this subdomain (e.g. go.example.com). Leave it blank to use the apex,
-      but only if nothing else is served there. A proxied DNS record is created for it.
-    </div>
+      <!-- Manual domain override -->
+      <div class="card">
+        <div class="card-title">Short-link domain</div>
+        <div class="card-desc">
+          The full URL where your Hopgo Worker is deployed. Set automatically by Deploy above, or
+          enter manually if you deployed the Worker yourself.
+        </div>
 
-    <div class="msg" id="msg"></div>
+        <div class="field">
+          <label for="shortDomain">Domain URL</label>
+          <input
+            id="shortDomain"
+            type="url"
+            placeholder="https://go.yourdomain.com"
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" id="save">Save</button>
+        </div>
+      </div>
+
+      <div class="msg" id="msg"></div>
+    </div>
     <script type="module" src="/src/options.ts"></script>
   </body>
 </html>

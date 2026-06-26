@@ -38,8 +38,8 @@ pnpm workspace monorepo. Requires Node 22.13+ and pnpm.
 hopgo/
   apps/
     worker/      # the redirect Worker deployed into the user's Cloudflare account
-    web/         # static management web app (Vite, Cloudflare Pages)
     extension/   # Chrome MV3 extension
+    site/        # marketing site at hopgo.co (static, GitHub Pages)
   packages/
     shared/      # types, Cloudflare API client, OAuth (PKCE), slug + link helpers
 ```
@@ -90,6 +90,14 @@ Load and connect:
 
 If you already run your own Worker, skip step 4 and just set the short-link domain manually (it must
 be bound to the `hopgo-links` KV namespace).
+
+## Marketing site
+
+The public site at [hopgo.co](https://hopgo.co) lives in [apps/site](apps/site): plain static
+HTML/CSS, no build step. Preview it with `python3 -m http.server -d apps/site/public 8080`. Pushing
+to `main` with changes under `apps/site/**` deploys it to GitHub Pages via
+[.github/workflows/pages.yml](.github/workflows/pages.yml), which also renders the Open Graph image
+from `assets/og-image.html`. See [apps/site/README.md](apps/site/README.md).
 
 ## Security
 

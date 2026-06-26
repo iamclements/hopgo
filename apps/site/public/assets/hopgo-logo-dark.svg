@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216 64" width="216" height="64" fill="none">
+  <defs>
+    
+  </defs>
+  <circle cx="10" cy="48" r="7" fill="#3b82f6"></circle>
+  <path d="M10 48 Q 32 4 54 48" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"></path>
+  <circle cx="54" cy="48" r="7" fill="#3b82f6"></circle>
+  <text x="74" y="51" font-family="&#39;Space Grotesk&#39;, ui-sans-serif, system-ui, sans-serif" font-weight="700" font-size="42" letter-spacing="-1">
+    <tspan fill="#f2f5fa">hop</tspan><tspan fill="#3b82f6">go</tspan>
+  </text>
+</svg>

@@ -1,0 +1,167 @@
+<!doctype html>
+<!--
+  Source for og-image.png (1200x630). Render this file at exactly 1200x630
+  and export to assets/og-image.png. See apps/site/README.md for the command.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        background: #07090e;
+      }
+      .og {
+        width: 1200px;
+        height: 630px;
+        background: #07090e;
+        position: relative;
+        overflow: hidden;
+        font-family: "Space Grotesk", sans-serif;
+      }
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+        background-size: 80px 80px;
+      }
+      .glow {
+        position: absolute;
+        left: -120px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 640px;
+        height: 640px;
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.22) 0%, transparent 65%);
+      }
+      .bigmark {
+        position: absolute;
+        right: -120px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.1;
+      }
+      .content {
+        position: absolute;
+        left: 88px;
+        top: 0;
+        bottom: 0;
+        right: 360px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #3b82f6;
+        margin-bottom: 28px;
+      }
+      .lockup {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 36px;
+      }
+      .lockup svg {
+        flex-shrink: 0;
+        filter: drop-shadow(0 0 20px rgba(59, 130, 246, 0.55));
+      }
+      .word {
+        font-size: 96px;
+        font-weight: 700;
+        letter-spacing: -0.035em;
+        color: #eef1f6;
+        line-height: 1;
+      }
+      .word .go {
+        color: #3b82f6;
+      }
+      .headline {
+        font-size: 34px;
+        font-weight: 600;
+        color: #eef1f6;
+        line-height: 1.25;
+        margin-bottom: 14px;
+      }
+      .body {
+        font-size: 19px;
+        color: #6b7a96;
+        line-height: 1.5;
+        max-width: 580px;
+      }
+      .bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 22px 88px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .bar .domain {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 15px;
+        color: #4a5468;
+        letter-spacing: 0.04em;
+      }
+      .bar .tags {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #2d3a50;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="og">
+      <div class="grid"></div>
+      <div class="glow"></div>
+      <div class="bigmark">
+        <svg width="560" height="560" viewBox="0 0 64 64" fill="none">
+          <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+          <path d="M10 48 Q 32 4 54 48" stroke="#3b82f6" stroke-width="8" stroke-linecap="round" />
+          <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+        </svg>
+      </div>
+      <div class="content">
+        <div class="label">Free · Open Source · MIT</div>
+        <div class="lockup">
+          <svg width="80" height="80" viewBox="0 0 64 64" fill="none">
+            <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+            <path
+              d="M10 48 Q 32 4 54 48"
+              stroke="#3b82f6"
+              stroke-width="8"
+              stroke-linecap="round"
+            />
+            <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+          </svg>
+          <span class="word">hop<span class="go">go</span></span>
+        </div>
+        <div class="headline">Your links. Your domain. Zero hosting.</div>
+        <div class="body">
+          A branded URL shortener that runs on your own Cloudflare account. Nothing to host. Nothing
+          of yours lives with us.
+        </div>
+      </div>
+      <div class="bar">
+        <span class="domain">hopgo.co</span>
+        <span class="tags">Cloudflare Edge · Chrome Extension · MIT</span>
+      </div>
+    </div>
+  </body>
+</html>

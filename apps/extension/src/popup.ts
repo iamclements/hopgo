@@ -302,12 +302,15 @@ async function render(): Promise<void> {
     opt.selected = d === shortDomain;
     domainSelectEl.appendChild(opt);
   }
-  domainSelectEl.style.display = domains.length > 1 ? "" : "none";
-  domainPillEl.style.display = domains.length > 1 ? "none" : "";
+  const addOpt = document.createElement("option");
+  addOpt.value = "__add__";
+  addOpt.textContent = "+ Add domain";
+  domainSelectEl.appendChild(addOpt);
+  domainSelectEl.style.display = "";
+  domainPillEl.style.display = "none";
 
   // Show the ready screen.
   const host = domainHost(shortDomain);
-  if (domains.length === 1) domainPillEl.textContent = host;
   slugPrefixEl.textContent = `${host} / `;
   currentTabEl.textContent = currentTabUrl || "No active tab";
   slugEl.value = currentTabUrl ? (slugFromUrl(currentTabUrl) ?? "") : "";
@@ -357,6 +360,12 @@ $<HTMLButtonElement>("settings").addEventListener("click", () => {
 
 domainSelectEl.addEventListener("change", async () => {
   const selected = domainSelectEl.value;
+  if (selected === "__add__") {
+    chrome.runtime.openOptionsPage();
+    // Reset select back to the current active domain.
+    domainSelectEl.value = shortDomain;
+    return;
+  }
   await setActiveDomain(selected);
   shortDomain = selected;
   const host = domainHost(selected);

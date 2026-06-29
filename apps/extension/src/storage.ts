@@ -20,7 +20,14 @@ export async function setConnection(connection: Connection): Promise<void> {
 }
 
 export async function clearConnection(): Promise<void> {
-  await chrome.storage.local.remove(["connection", "linksCache"]);
+  await chrome.storage.local.remove([
+    "connection",
+    "linksCache",
+    "domains",
+    "activeDomain",
+    "domainNamespaces",
+    "shortDomain",
+  ]);
 }
 
 /** Cached link list, shown instantly on open while a fresh copy loads. */

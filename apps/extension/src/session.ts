@@ -3,10 +3,24 @@
  * A "connected" session has a non-expired access token plus the discovered
  * account and namespace ids.
  */
-import { CloudflareKvClient, discoverAccountId, ensureNamespace, listZones } from "@hopgo/shared";
+import {
+  CloudflareKvClient,
+  discoverAccountId,
+  discoverDomains,
+  ensureNamespace,
+  listZones,
+} from "@hopgo/shared";
 import { cfFetch } from "./cf-fetch.js";
 import { signInWithCloudflare } from "./cf-oauth.js";
-import { clearConnection, getConnection, setConnection, type Connection } from "./storage.js";
+import {
+  clearConnection,
+  getConnection,
+  setActiveDomain,
+  setConnection,
+  setDomainNamespace,
+  setDomains,
+  type Connection,
+} from "./storage.js";
 
 /** Treat tokens within this window of expiry as already expired. */
 const EXPIRY_SKEW_MS = 60_000;
@@ -51,6 +65,19 @@ export async function connect(): Promise<Connection> {
     namespaceId,
   };
   await setConnection(connection);
+
+  // Best-effort: scan for existing Hopgo Workers and populate domain list.
+  // Errors are swallowed so sign-in is never blocked by discovery failures.
+  const discovered = await discoverDomains(cfFetch, tokens.accessToken, accountId);
+  if (discovered.length > 0) {
+    const domainUrls = discovered.map((d) => d.domain);
+    await setDomains(domainUrls);
+    await setActiveDomain(domainUrls[0]!);
+    for (const d of discovered) {
+      await setDomainNamespace(d.domain, d.namespaceId);
+    }
+  }
+
   return connection;
 }
 

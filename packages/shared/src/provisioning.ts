@@ -109,7 +109,8 @@ export async function deployWorker(
   }
 }
 
-/** Bind a route (e.g. example.com/*) to the script, skipping if it already exists. */
+/** Bind a route (e.g. example.com/*) to the script.
+ *  If the pattern already exists pointing at a different script, updates it in place. */
 export async function ensureRoute(
   fetchImpl: typeof fetch,
   token: string,
@@ -121,12 +122,25 @@ export async function ensureRoute(
     headers: authHeader(token),
   });
   const listed = (await listRes.json().catch(() => null)) as Envelope<
-    Array<{ pattern: string; script: string }>
+    Array<{ id: string; pattern: string; script: string }>
   > | null;
   if (!listRes.ok || !listed?.success) {
     throw new CloudflareApiError("Failed to list Worker routes", listRes.status, listed?.errors);
   }
-  if (listed.result.some((r) => r.pattern === pattern && r.script === scriptName)) {
+
+  const existing = listed.result.find((r) => r.pattern === pattern);
+  if (existing) {
+    if (existing.script === scriptName) return; // already correct
+    // Pattern exists but points at a different script — update it.
+    const res = await fetchImpl(`${CF_API}/zones/${zoneId}/workers/routes/${existing.id}`, {
+      method: "PUT",
+      headers: { ...authHeader(token), "content-type": "application/json" },
+      body: JSON.stringify({ pattern, script: scriptName }),
+    });
+    const body = (await res.json().catch(() => null)) as Envelope<unknown> | null;
+    if (!res.ok || !body?.success) {
+      throw new CloudflareApiError("Failed to update Worker route", res.status, body?.errors);
+    }
     return;
   }
 

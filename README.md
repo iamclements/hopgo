@@ -26,7 +26,8 @@ with us.
 ## Use it
 
 - **Chrome extension:** shorten the current tab in one click, copy the short URL, see recent links.
-- **Web app:** manage all your links, see click counts, create custom slugs.
+- **Extension dashboard:** open a full link manager tab from inside the extension - search, sort,
+  bulk delete, set expiry dates, and configure your 404 redirect. No external site needed.
 
 Both are published from this repo. Install links land here once the first release ships (see Roadmap).
 
@@ -101,9 +102,9 @@ from `assets/og-image.html`. See [apps/site/README.md](apps/site/README.md).
 
 ## Security
 
-- **OAuth, not pasted tokens.** You sign in with Cloudflare and approve a minimal scope. The web
-  app is a static SPA: the access token lives in the browser tab only and is dropped when it
-  expires (re-login is one click). Nothing is persisted to a Hopgo server, because there is none.
+- **OAuth, not pasted tokens.** You sign in with Cloudflare and approve a minimal scope. The
+  access token is stored locally in the extension and is never sent to a Hopgo server (there is
+  none). Tokens auto-refresh silently; re-login is a single click if needed.
 - **Least privilege.** Hopgo asks only for what it needs (Workers KV; Workers Scripts/Routes and
   Zone read are requested only for the one-click Worker setup). Revoke anytime in your Cloudflare
   dashboard under Connected Applications.
@@ -118,9 +119,10 @@ tab), and one-click domain setup (deploy the Worker + bind the route into your a
 
 Next:
 
-1. Web app: a static frontend plus a thin Cloudflare Worker backend (Cloudflare's API has no CORS,
-   so a browser page needs a proxy) to manage links from anywhere.
-2. Release pipeline: publish the extension to the Chrome Web Store and the web app to Cloudflare Pages.
+1. Extension dashboard: a full link manager tab served from the extension itself (no external
+   site). Search, bulk delete, expiry dates, click stats, and a configurable 404 redirect.
+2. workers.dev path: provision a free `*.workers.dev` subdomain for users without a custom domain.
+3. Release pipeline: publish the extension to the Chrome Web Store.
 
 ## License
 

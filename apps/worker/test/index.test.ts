@@ -57,7 +57,22 @@ describe("worker redirect", () => {
 
     expect(res.status).toBe(200);
     expect(res.headers.get("content-type")).toContain("text/html");
-    expect(await res.text()).toContain("<h1>Hopgo</h1>");
+    expect(await res.text()).toContain("short links");
+  });
+
+  it("redirects unknown slugs to __404_redirect__ when set", async () => {
+    await env.LINKS.put("__404_redirect__", "https://mysite.com");
+
+    const res = await dispatch("/missing");
+
+    expect(res.status).toBe(302);
+    expect(res.headers.get("location")).toBe("https://mysite.com/");
+  });
+
+  it("404s unknown slugs when __404_redirect__ is not set", async () => {
+    const res = await dispatch("/missing");
+
+    expect(res.status).toBe(404);
   });
 
   it("rejects non-GET methods", async () => {

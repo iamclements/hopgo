@@ -1,10 +1,10 @@
 /**
  * Hopgo data plane: the Cloudflare Worker that serves redirects from the edge.
  *
- * This is the resilient half of Hopgo. It depends only on Cloudflare KV, never on
- * the control-plane container. `GET /:slug` looks the slug up in KV and 302s to the
- * target; an unknown slug returns a branded 404. Click counts are bumped after the
- * response is sent via `ctx.waitUntil`, so counting never delays the redirect.
+ * `GET /:slug` looks the slug up in KV and 302s to the target. Unknown slugs
+ * return a 404, or redirect to the URL stored under the reserved key
+ * `__404_redirect__` if set. Click counts are bumped after the response via
+ * `ctx.waitUntil`, so counting never delays the redirect.
  */
 
 import { LANDING_HTML } from "./landing.js";
@@ -22,7 +22,7 @@ function clickKey(slug: string): string {
 }
 
 /** Reserved top-level paths that are never treated as slugs. */
-const RESERVED_PATHS = new Set(["", "favicon.ico", "robots.txt"]);
+const RESERVED_PATHS = new Set(["", "favicon.ico", "robots.txt", "__404_redirect__"]);
 
 function landingResponse(): Response {
   return new Response(LANDING_HTML, {
@@ -64,6 +64,8 @@ export default {
 
     const link = await env.LINKS.get<StoredLink>(slug, "json");
     if (!link) {
+      const redirect404 = await env.LINKS.get("__404_redirect__");
+      if (redirect404) return Response.redirect(redirect404, 302);
       return notFoundResponse(slug);
     }
 

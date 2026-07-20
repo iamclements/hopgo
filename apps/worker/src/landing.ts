@@ -1,18 +1,15 @@
 /**
- * The page served at the apex root (hopgo.co/). Every other path is a slug
- * lookup. Kept as a single inline HTML string so the worker stays a single
- * bundle with no asset pipeline.
+ * The page served at the apex root. Every other path is a slug lookup.
+ * Kept as a single inline HTML string so the worker stays a single bundle
+ * with no asset pipeline. Intentionally unbranded: this runs on the user's
+ * own domain.
  */
 export const LANDING_HTML = `<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hopgo - edge-served short links</title>
-    <meta
-      name="description"
-      content="Self-hosted URL shortener whose redirects live on Cloudflare's edge. Your host is disposable; your links survive."
-    />
+    <title>Short links</title>
     <style>
       :root { color-scheme: light dark; }
       body {
@@ -22,35 +19,16 @@ export const LANDING_HTML = `<!doctype html>
         display: grid;
         place-items: center;
         padding: 2rem;
+        color: #374151;
       }
-      main { max-width: 36rem; }
-      h1 { font-size: 2.5rem; margin: 0 0 0.5rem; }
-      p.lead { font-size: 1.15rem; opacity: 0.85; margin: 0 0 1.5rem; }
-      ul { padding-left: 1.1rem; margin: 0 0 1.5rem; }
-      li { margin: 0.25rem 0; }
-      a.btn {
-        display: inline-block;
-        padding: 0.6rem 1rem;
-        border-radius: 8px;
-        background: #2563eb;
-        color: #fff;
-        text-decoration: none;
-        font-weight: 600;
-      }
-      footer { margin-top: 2rem; opacity: 0.6; font-size: 0.85rem; }
+      @media (prefers-color-scheme: dark) { body { color: #d1d5db; } }
+      main { max-width: 28rem; text-align: center; }
+      p { margin: 0; opacity: 0.7; font-size: 0.95rem; }
     </style>
   </head>
   <body>
     <main>
-      <h1>Hopgo</h1>
-      <p class="lead">Self-hosted, branded short links whose redirects live on Cloudflare's edge.</p>
-      <ul>
-        <li>Your host is disposable: wipe the container, redeploy, lose zero links.</li>
-        <li>No inbound ports: redirects are served by Cloudflare, not your box.</li>
-        <li>You own everything: your domain, your Cloudflare account, your data.</li>
-      </ul>
-      <a class="btn" href="https://github.com/iamclements/hopgo">Get it on GitHub</a>
-      <footer>Powered by Hopgo. This domain serves short links; an unknown slug returns a 404.</footer>
+      <p>This domain serves short links. Follow a short link to be redirected.</p>
     </main>
   </body>
 </html>`;

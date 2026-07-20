@@ -4,8 +4,8 @@
  * no backend and no CORS problem: host_permissions cover api.cloudflare.com and
  * the OAuth endpoints.
  *
- * No refresh token is requested (no offline_access): the access token lives in
- * extension storage until it expires, then the user signs in again (one click).
+ * offline_access is included in the scope set to request a refresh token so tokens
+ * can be silently renewed without user interaction.
  */
 import {
   buildAuthorizeUrl,
@@ -13,12 +13,18 @@ import {
   exchangeCode,
   HOPGO_OAUTH_SCOPES,
   randomState,
+  type OAuthConfig,
   type TokenSet,
 } from "@hopgo/shared";
 
 /** Hopgo's public OAuth client (PKCE, no secret). */
 const CLIENT_ID = "13a19e6876148c2dfaa579cfb279893d";
 const SCOPES = [...HOPGO_OAUTH_SCOPES];
+
+/** Build the OAuthConfig for this extension (client ID + current redirect URI). */
+export function oauthConfig(): OAuthConfig {
+  return { clientId: CLIENT_ID, redirectUri: chrome.identity.getRedirectURL(), scopes: SCOPES };
+}
 
 /** Run the interactive OAuth flow and return the resulting tokens. */
 export async function signInWithCloudflare(): Promise<TokenSet> {

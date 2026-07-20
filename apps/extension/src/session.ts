@@ -9,9 +9,10 @@ import {
   discoverDomains,
   ensureNamespace,
   listZones,
+  refreshTokens,
 } from "@hopgo/shared";
 import { cfFetch } from "./cf-fetch.js";
-import { signInWithCloudflare } from "./cf-oauth.js";
+import { oauthConfig, signInWithCloudflare } from "./cf-oauth.js";
 import {
   clearConnection,
   getConnection,
@@ -30,11 +31,31 @@ function isExpired(connection: Connection): boolean {
   return Date.now() >= connection.expiresAt - EXPIRY_SKEW_MS;
 }
 
-/** The current connection, or null if absent or expired (re-sign-in needed). */
+/** Attempt a silent token refresh. Returns the updated connection, or null on failure. */
+async function attemptRefresh(connection: Connection): Promise<Connection | null> {
+  if (!connection.refreshToken) return null;
+  try {
+    const newTokens = await refreshTokens(oauthConfig(), connection.refreshToken);
+    const updated: Connection = {
+      ...connection,
+      accessToken: newTokens.accessToken,
+      expiresAt: newTokens.expiresAt,
+      refreshToken: newTokens.refreshToken ?? connection.refreshToken,
+    };
+    await setConnection(updated);
+    return updated;
+  } catch {
+    return null;
+  }
+}
+
+/** The current connection, refreshing silently when expired. Returns null only when
+ *  the token is expired and a refresh is not possible (no refresh token, or CF error). */
 export async function currentConnection(): Promise<Connection | null> {
   const connection = await getConnection();
-  if (!connection || isExpired(connection)) return null;
-  return connection;
+  if (!connection) return null;
+  if (!isExpired(connection)) return connection;
+  return attemptRefresh(connection);
 }
 
 /** Run the OAuth flow, discover account + namespace, and persist the connection. */
@@ -62,6 +83,7 @@ export async function connect(): Promise<Connection> {
   const connection: Connection = {
     accessToken: tokens.accessToken,
     expiresAt: tokens.expiresAt,
+    refreshToken: tokens.refreshToken,
     accountId,
     namespaceId,
   };
@@ -87,11 +109,15 @@ export async function disconnect(): Promise<void> {
   await clearConnection();
 }
 
-/** A KV client bound to the connection's account and access token.
- *  Pass namespaceId to override the connection's default (for per-domain namespaces). */
+/** A KV client bound to the connection's account. Uses a getToken callback so tokens
+ *  are auto-refreshed silently; the client always sends a valid Bearer. */
 export function clientFor(connection: Connection, namespaceId?: string): CloudflareKvClient {
   return new CloudflareKvClient({
-    apiToken: connection.accessToken,
+    getToken: async () => {
+      const current = await currentConnection();
+      if (!current) throw new Error("Session expired. Sign in again.");
+      return current.accessToken;
+    },
     accountId: connection.accountId,
     namespaceId: namespaceId ?? connection.namespaceId,
     fetch: cfFetch,

@@ -113,11 +113,7 @@ export class CloudflareKvClient {
   }
 
   /** Write a raw value. */
-  async writeValue(
-    key: string,
-    value: string,
-    options?: { expiration?: number },
-  ): Promise<void> {
+  async writeValue(key: string, value: string, options?: { expiration?: number }): Promise<void> {
     let path = `/values/${encodeURIComponent(key)}`;
     if (options?.expiration !== undefined) {
       path += `?expiration=${options.expiration}`;

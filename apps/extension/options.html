@@ -344,6 +344,44 @@
         cursor: default;
       }
 
+      /* ── Before-you-start callout ── */
+      .callout {
+        display: none;
+        background: rgba(37, 99, 235, 0.08);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--text-muted);
+      }
+
+      .callout.visible {
+        display: block;
+      }
+
+      .callout strong {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+
+      .callout ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .callout li {
+        margin-bottom: 4px;
+      }
+
+      .callout li:last-child {
+        margin-bottom: 0;
+      }
+
       /* ── Spinner ── */
       @keyframes spin {
         to {
@@ -376,12 +414,37 @@
         <span class="head-sub">Settings</span>
       </div>
 
+      <!-- Before-you-start callout (shown only when no domains are configured) -->
+      <div class="callout" id="beforeStart">
+        <strong>Before you start</strong>
+        <ul>
+          <li>
+            You need a free
+            <a
+              href="https://dash.cloudflare.com/sign-up"
+              target="_blank"
+              rel="noopener"
+              style="color: var(--blue-bright)"
+              >Cloudflare account</a
+            >
+            (no credit card required).
+          </li>
+          <li>
+            No domain? Use the free <strong>workers.dev</strong> path below - no setup needed.
+          </li>
+          <li>
+            Have a domain on Cloudflare? Use the one-click domain setup to serve links from your own
+            domain.
+          </li>
+        </ul>
+      </div>
+
       <!-- Free workers.dev path -->
       <div class="card">
         <div class="card-title">Free setup - no domain required</div>
         <div class="card-desc">
-          Deploy to your free Cloudflare workers.dev subdomain. No custom domain, no DNS setup.
-          Sign in via the popup first.
+          Deploy to your free Cloudflare workers.dev subdomain. No custom domain, no DNS setup. Sign
+          in via the popup first.
         </div>
         <div class="field" style="margin-bottom: 0">
           <button class="btn btn-primary" id="deployWorkersDev">Deploy to workers.dev</button>

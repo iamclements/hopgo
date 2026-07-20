@@ -23,6 +23,7 @@ const subdomainEl = $<HTMLInputElement>("subdomain");
 const deployBtn = $<HTMLButtonElement>("deploy");
 const msgEl = $<HTMLDivElement>("msg");
 const savedListEl = $<HTMLDivElement>("savedDomains");
+const beforeStartEl = $<HTMLDivElement>("beforeStart");
 
 function setMsg(text: string, isError = false): void {
   msgEl.textContent = text;
@@ -40,6 +41,7 @@ async function renderSavedDomains(): Promise<void> {
     getDomainNamespaces(),
   ]);
   savedListEl.innerHTML = "";
+  beforeStartEl.className = `callout${domains.length === 0 ? " visible" : ""}`;
   if (domains.length === 0) return;
   for (const d of domains) {
     const row = document.createElement("div");
@@ -121,7 +123,10 @@ async function refreshZones(): Promise<void> {
     zones = await loadZones();
     zoneEl.innerHTML = "";
     if (zones.length === 0) {
-      setMsg("No domains found on this Cloudflare account.", true);
+      setMsg(
+        "No domains found on this Cloudflare account. Use the free workers.dev option above to get started without a domain.",
+        true,
+      );
       deployBtn.disabled = true;
       return;
     }

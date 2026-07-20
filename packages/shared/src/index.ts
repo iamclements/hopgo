@@ -41,6 +41,9 @@ export {
   ensureRoute,
   ensureDnsRecord,
   provisionDomain,
+  provisionWorkersDotDevDomain,
+  getWorkersDotDevSubdomain,
+  enableWorkersDotDevRoute,
   discoverDomains,
   REDIRECT_WORKER_SCRIPT,
   WORKER_SCRIPT_VERSION,
@@ -49,6 +52,7 @@ export {
   type CloudflareZone,
   type DeployWorkerOptions,
   type ProvisionOptions,
+  type ProvisionWorkersDotDevOptions,
   type DiscoveredDomain,
 } from "./provisioning.js";
 export {

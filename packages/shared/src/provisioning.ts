@@ -328,3 +328,81 @@ export async function provisionDomain(
   });
   await ensureRoute(fetchImpl, token, options.zoneId, options.pattern, scriptName);
 }
+
+/**
+ * Return the workers.dev subdomain for the account (the part before .workers.dev).
+ * Cloudflare creates one automatically on first script deploy; may be null for
+ * brand-new accounts that have never deployed a script.
+ */
+export async function getWorkersDotDevSubdomain(
+  fetchImpl: typeof fetch,
+  token: string,
+  accountId: string,
+): Promise<string | null> {
+  const res = await fetchImpl(`${CF_API}/accounts/${accountId}/workers/subdomain`, {
+    headers: authHeader(token),
+  });
+  const body = (await res.json().catch(() => null)) as Envelope<{ subdomain: string } | null> | null;
+  if (!res.ok || !body?.success) return null;
+  return body.result?.subdomain ?? null;
+}
+
+/** Enable the workers.dev route for a deployed script. */
+export async function enableWorkersDotDevRoute(
+  fetchImpl: typeof fetch,
+  token: string,
+  accountId: string,
+  scriptName: string,
+): Promise<void> {
+  const res = await fetchImpl(
+    `${CF_API}/accounts/${accountId}/workers/scripts/${scriptName}/subdomain`,
+    {
+      method: "POST",
+      headers: { ...authHeader(token), "content-type": "application/json" },
+      body: JSON.stringify({ enabled: true }),
+    },
+  );
+  const body = (await res.json().catch(() => null)) as Envelope<unknown> | null;
+  if (!res.ok || !body?.success) {
+    throw new CloudflareApiError(
+      "Failed to enable workers.dev route",
+      res.status,
+      body?.errors,
+    );
+  }
+}
+
+export interface ProvisionWorkersDotDevOptions {
+  accountId: string;
+  namespaceId: string;
+  scriptName?: string;
+  compatibilityDate?: string;
+}
+
+/**
+ * Deploy the Worker and enable its workers.dev route, then return the resulting
+ * URL (https://<scriptName>.<subdomain>.workers.dev). No zone or DNS needed.
+ * Throws if the account subdomain is unavailable after deployment.
+ */
+export async function provisionWorkersDotDevDomain(
+  fetchImpl: typeof fetch,
+  token: string,
+  options: ProvisionWorkersDotDevOptions,
+): Promise<string> {
+  const scriptName = options.scriptName ?? DEFAULT_SCRIPT_NAME;
+  await deployWorker(fetchImpl, token, {
+    accountId: options.accountId,
+    namespaceId: options.namespaceId,
+    scriptName,
+    compatibilityDate: options.compatibilityDate,
+  });
+  await enableWorkersDotDevRoute(fetchImpl, token, options.accountId, scriptName);
+  const subdomain = await getWorkersDotDevSubdomain(fetchImpl, token, options.accountId);
+  if (!subdomain) {
+    throw new Error(
+      "Cloudflare did not return a workers.dev subdomain. " +
+        "Try again, or contact Cloudflare support if this persists.",
+    );
+  }
+  return `https://${scriptName}.${subdomain}.workers.dev`;
+}

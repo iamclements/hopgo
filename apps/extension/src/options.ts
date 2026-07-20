@@ -1,6 +1,6 @@
 import { deployWorker, WORKER_SCRIPT_VERSION, type CloudflareZone } from "@hopgo/shared";
 import { cfFetch } from "./cf-fetch.js";
-import { loadZones, provisionZone } from "./setup.js";
+import { loadZones, provisionWorkersDotDev, provisionZone } from "./setup.js";
 import { currentConnection } from "./session.js";
 import {
   getActiveDomain,
@@ -140,6 +140,21 @@ async function refreshZones(): Promise<void> {
 
 async function init(): Promise<void> {
   await renderSavedDomains();
+
+  const workersDev = $<HTMLButtonElement>("deployWorkersDev");
+  workersDev.addEventListener("click", async () => {
+    workersDev.disabled = true;
+    setMsg("Deploying to workers.dev...");
+    try {
+      const shortDomain = await provisionWorkersDotDev();
+      await renderSavedDomains();
+      setMsg(`Done. Short links will be served at ${shortDomain}.`);
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "Setup failed", true);
+    } finally {
+      workersDev.disabled = false;
+    }
+  });
 
   $<HTMLButtonElement>("save").addEventListener("click", async () => {
     const domain = normalizeBaseUrl(shortDomainEl.value);

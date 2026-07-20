@@ -41,12 +41,14 @@ export {
   ensureRoute,
   ensureDnsRecord,
   provisionDomain,
+  discoverDomains,
   REDIRECT_WORKER_SCRIPT,
   DEFAULT_SCRIPT_NAME,
   DEFAULT_COMPATIBILITY_DATE,
   type CloudflareZone,
   type DeployWorkerOptions,
   type ProvisionOptions,
+  type DiscoveredDomain,
 } from "./provisioning.js";
 export {
   buildAuthorizeUrl,

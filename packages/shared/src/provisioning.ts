@@ -109,7 +109,8 @@ export async function deployWorker(
   }
 }
 
-/** Bind a route (e.g. example.com/*) to the script, skipping if it already exists. */
+/** Bind a route (e.g. example.com/*) to the script.
+ *  If the pattern already exists pointing at a different script, updates it in place. */
 export async function ensureRoute(
   fetchImpl: typeof fetch,
   token: string,
@@ -121,12 +122,25 @@ export async function ensureRoute(
     headers: authHeader(token),
   });
   const listed = (await listRes.json().catch(() => null)) as Envelope<
-    Array<{ pattern: string; script: string }>
+    Array<{ id: string; pattern: string; script: string }>
   > | null;
   if (!listRes.ok || !listed?.success) {
     throw new CloudflareApiError("Failed to list Worker routes", listRes.status, listed?.errors);
   }
-  if (listed.result.some((r) => r.pattern === pattern && r.script === scriptName)) {
+
+  const existing = listed.result.find((r) => r.pattern === pattern);
+  if (existing) {
+    if (existing.script === scriptName) return; // already correct
+    // Pattern exists but points at a different script — update it.
+    const res = await fetchImpl(`${CF_API}/zones/${zoneId}/workers/routes/${existing.id}`, {
+      method: "PUT",
+      headers: { ...authHeader(token), "content-type": "application/json" },
+      body: JSON.stringify({ pattern, script: scriptName }),
+    });
+    const body = (await res.json().catch(() => null)) as Envelope<unknown> | null;
+    if (!res.ok || !body?.success) {
+      throw new CloudflareApiError("Failed to update Worker route", res.status, body?.errors);
+    }
     return;
   }
 
@@ -192,6 +206,104 @@ export interface ProvisionOptions {
   namespaceId: string;
   scriptName?: string;
   compatibilityDate?: string;
+}
+
+/** List all Worker scripts in an account. */
+async function listWorkerScripts(
+  fetchImpl: typeof fetch,
+  token: string,
+  accountId: string,
+): Promise<Array<{ id: string }>> {
+  const res = await fetchImpl(`${CF_API}/accounts/${accountId}/workers/scripts`, {
+    headers: authHeader(token),
+  });
+  const body = (await res.json().catch(() => null)) as Envelope<Array<{ id: string }>> | null;
+  if (!res.ok || !body?.success) return [];
+  return body.result;
+}
+
+/** Return the namespace_id of the LINKS KV binding for a Worker, or null if not found. */
+async function getWorkerNamespaceId(
+  fetchImpl: typeof fetch,
+  token: string,
+  accountId: string,
+  scriptName: string,
+): Promise<string | null> {
+  const res = await fetchImpl(
+    `${CF_API}/accounts/${accountId}/workers/scripts/${scriptName}/bindings`,
+    { headers: authHeader(token) },
+  );
+  const body = (await res.json().catch(() => null)) as Envelope<
+    Array<{ type: string; name: string; namespace_id?: string }>
+  > | null;
+  if (!res.ok || !body?.success) return null;
+  return (
+    body.result.find((b) => b.type === "kv_namespace" && b.name === "LINKS")?.namespace_id ?? null
+  );
+}
+
+export interface DiscoveredDomain {
+  domain: string;
+  namespaceId: string;
+  scriptName: string;
+}
+
+/**
+ * Scan the account for Hopgo Workers (named "hopgo" or "hopgo-*") and return
+ * the domain + namespace for each. Used to auto-populate the domain list after
+ * sign-in. Returns an empty array on any API error so sign-in is never blocked.
+ */
+export async function discoverDomains(
+  fetchImpl: typeof fetch,
+  token: string,
+  accountId: string,
+): Promise<DiscoveredDomain[]> {
+  try {
+    const scripts = await listWorkerScripts(fetchImpl, token, accountId);
+    const hopgoScripts = scripts.filter((s) => s.id === "hopgo" || s.id.startsWith("hopgo-"));
+    if (hopgoScripts.length === 0) return [];
+
+    // Resolve namespace IDs for all Hopgo Workers in parallel.
+    const nsEntries = await Promise.all(
+      hopgoScripts.map(async (s) => {
+        const nsId = await getWorkerNamespaceId(fetchImpl, token, accountId, s.id);
+        return { scriptName: s.id, namespaceId: nsId };
+      }),
+    );
+    const scriptNs = new Map(
+      nsEntries
+        .filter((e): e is { scriptName: string; namespaceId: string } => e.namespaceId !== null)
+        .map((e) => [e.scriptName, e.namespaceId]),
+    );
+
+    // Check every zone's routes for routes that point at a Hopgo Worker.
+    const zones = await listZones(fetchImpl, token);
+    const results: DiscoveredDomain[] = [];
+
+    await Promise.all(
+      zones.map(async (zone) => {
+        const res = await fetchImpl(`${CF_API}/zones/${zone.id}/workers/routes`, {
+          headers: authHeader(token),
+        });
+        const body = (await res.json().catch(() => null)) as Envelope<
+          Array<{ pattern: string; script: string }>
+        > | null;
+        if (!res.ok || !body?.success) return;
+        for (const route of body.result) {
+          const nsId = scriptNs.get(route.script);
+          if (!nsId) continue;
+          // Extract hostname from pattern like "go.example.com/*" — skip wildcard hosts.
+          const host = route.pattern.replace(/\/\*$/, "");
+          if (host.includes("*")) continue;
+          results.push({ domain: `https://${host}`, namespaceId: nsId, scriptName: route.script });
+        }
+      }),
+    );
+
+    return results;
+  } catch {
+    return [];
+  }
 }
 
 /** Deploy the Worker and bind the route in one step. */

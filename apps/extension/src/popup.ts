@@ -10,7 +10,14 @@ import {
   putLink,
 } from "@hopgo/shared";
 import { clientFor, currentConnection, disconnect } from "./session.js";
-import { getCachedLinks, getShortDomain, setCachedLinks } from "./storage.js";
+import {
+  getCachedLinks,
+  getActiveDomain,
+  getDomainNamespaces,
+  getDomains,
+  setActiveDomain,
+  setCachedLinks,
+} from "./storage.js";
 import { buildShortUrl } from "./util.js";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -22,6 +29,7 @@ const screenReady = $("screenReady");
 
 // Header
 const domainPillEl = $("domainPill");
+const domainSelectEl = $<HTMLSelectElement>("domainSelect");
 
 // Sign-out screen
 const connectBtn = $<HTMLButtonElement>("connect");
@@ -179,7 +187,12 @@ function escHtml(s: string): string {
 async function loadLinks(): Promise<void> {
   const connection = await currentConnection();
   if (!connection) return;
-  const client = clientFor(connection);
+
+  // Use the namespace for the active domain; fall back to the connection default for
+  // domains provisioned before per-domain namespaces were introduced.
+  const namespaces = await getDomainNamespaces();
+  const namespaceId = namespaces[shortDomain] ?? connection.namespaceId;
+  const client = clientFor(connection, namespaceId);
 
   // Show cache immediately for instant feel.
   const cached = await getCachedLinks();
@@ -206,7 +219,9 @@ async function removeLink(slug: string): Promise<void> {
   const connection = await currentConnection();
   if (!connection) return;
   try {
-    await deleteLink(clientFor(connection), slug);
+    const namespaces = await getDomainNamespaces();
+    const namespaceId = namespaces[shortDomain] ?? connection.namespaceId;
+    await deleteLink(clientFor(connection, namespaceId), slug);
     setMsg(`Deleted ${slug}`, "info");
     setTimeout(clearMsg, 2000);
     await loadLinks();
@@ -232,7 +247,9 @@ async function shorten(): Promise<void> {
   clearMsg();
 
   try {
-    const client = clientFor(connection);
+    const namespaces = await getDomainNamespaces();
+    const namespaceId = namespaces[shortDomain] ?? connection.namespaceId;
+    const client = clientFor(connection, namespaceId);
     let slug: string;
 
     if (customSlug) {
@@ -279,16 +296,31 @@ async function render(): Promise<void> {
     return;
   }
 
-  shortDomain = await getShortDomain();
+  const [domains, activeDomain] = await Promise.all([getDomains(), getActiveDomain()]);
+  shortDomain = activeDomain;
   if (!shortDomain) {
     showScreen("noDomain");
     return;
   }
 
+  // Populate domain selector.
+  domainSelectEl.innerHTML = "";
+  for (const d of domains) {
+    const opt = document.createElement("option");
+    opt.value = d;
+    opt.textContent = domainHost(d);
+    opt.selected = d === shortDomain;
+    domainSelectEl.appendChild(opt);
+  }
+  const addOpt = document.createElement("option");
+  addOpt.value = "__add__";
+  addOpt.textContent = "+ Add domain";
+  domainSelectEl.appendChild(addOpt);
+  domainSelectEl.style.display = "";
+  domainPillEl.style.display = "none";
+
   // Show the ready screen.
   const host = domainHost(shortDomain);
-  domainPillEl.textContent = host;
-  domainPillEl.style.display = "";
   slugPrefixEl.textContent = `${host} / `;
   currentTabEl.textContent = currentTabUrl || "No active tab";
   slugEl.value = currentTabUrl ? (slugFromUrl(currentTabUrl) ?? "") : "";
@@ -334,6 +366,21 @@ signoutBtn.addEventListener("click", async () => {
 
 $<HTMLButtonElement>("settings").addEventListener("click", () => {
   chrome.runtime.openOptionsPage();
+});
+
+domainSelectEl.addEventListener("change", async () => {
+  const selected = domainSelectEl.value;
+  if (selected === "__add__") {
+    chrome.runtime.openOptionsPage();
+    // Reset select back to the current active domain.
+    domainSelectEl.value = shortDomain;
+    return;
+  }
+  await setActiveDomain(selected);
+  shortDomain = selected;
+  const host = domainHost(selected);
+  slugPrefixEl.textContent = `${host} / `;
+  void loadLinks();
 });
 
 shortenBtn.addEventListener("click", () => {

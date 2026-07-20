@@ -3,9 +3,16 @@
  * redirect Worker bound to the connection's KV namespace, then return the short
  * domain. Requires an active connection (sign in via the popup first).
  */
-import { ensureDnsRecord, listZones, provisionDomain, type CloudflareZone } from "@hopgo/shared";
+import {
+  ensureDnsRecord,
+  ensureNamespace,
+  listZones,
+  provisionDomain,
+  type CloudflareZone,
+} from "@hopgo/shared";
 import { cfFetch } from "./cf-fetch.js";
 import { currentConnection } from "./session.js";
+import { setDomainNamespace } from "./storage.js";
 
 export async function loadZones(): Promise<CloudflareZone[]> {
   const connection = await currentConnection();
@@ -37,12 +44,23 @@ export async function provisionZone(
   }
 
   const host = subdomain ? `${subdomain}.${zone.name}` : zone.name;
+  // Each domain gets its own KV namespace and Worker script so link pools are isolated.
+  const safeHost = host.replace(/[^a-z0-9]/gi, "-");
+  const namespaceId = await ensureNamespace(
+    cfFetch,
+    connection.accessToken,
+    connection.accountId,
+    `hopgo-links-${safeHost}`,
+  );
+  const scriptName = `hopgo-${safeHost}`;
   await provisionDomain(cfFetch, connection.accessToken, {
     accountId: connection.accountId,
     zoneId: zone.id,
     pattern: `${host}/*`,
-    namespaceId: connection.namespaceId,
+    namespaceId,
+    scriptName,
   });
+  await setDomainNamespace(`https://${host}`, namespaceId);
 
   let dns: ProvisionResult["dns"] = "created";
   try {

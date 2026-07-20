@@ -52,4 +52,17 @@ describe("ensureNamespace", () => {
     expect(await ensureNamespace(fetchMock as unknown as typeof fetch, "tok", "acct1")).toBe("ns2");
     expect((fetchMock.mock.calls[1]![1] as RequestInit).method).toBe("POST");
   });
+
+  it("throws a human-readable message when the KV namespace limit is reached", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(json({ success: true, errors: [], result: [] }))
+      .mockResolvedValueOnce(
+        json({ success: false, errors: [{ code: 10026, message: "limit exceeded" }] }, 400),
+      );
+
+    await expect(
+      ensureNamespace(fetchMock as unknown as typeof fetch, "tok", "acct1"),
+    ).rejects.toThrow(/KV namespace limit reached/);
+  });
 });

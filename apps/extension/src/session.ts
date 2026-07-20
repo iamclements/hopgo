@@ -18,6 +18,7 @@ import {
   setActiveDomain,
   setConnection,
   setDomainNamespace,
+  setDomainScriptName,
   setDomains,
   type Connection,
 } from "./storage.js";
@@ -75,6 +76,7 @@ export async function connect(): Promise<Connection> {
     await setActiveDomain(domainUrls[0]!);
     for (const d of discovered) {
       await setDomainNamespace(d.domain, d.namespaceId);
+      await setDomainScriptName(d.domain, d.scriptName);
     }
   }
 

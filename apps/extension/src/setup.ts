@@ -8,11 +8,12 @@ import {
   ensureNamespace,
   listZones,
   provisionDomain,
+  WORKER_SCRIPT_VERSION,
   type CloudflareZone,
 } from "@hopgo/shared";
 import { cfFetch } from "./cf-fetch.js";
 import { currentConnection } from "./session.js";
-import { setDomainNamespace } from "./storage.js";
+import { setDomainNamespace, setDomainScriptName, setWorkerVersion } from "./storage.js";
 
 export async function loadZones(): Promise<CloudflareZone[]> {
   const connection = await currentConnection();
@@ -60,7 +61,10 @@ export async function provisionZone(
     namespaceId,
     scriptName,
   });
-  await setDomainNamespace(`https://${host}`, namespaceId);
+  const domainUrl = `https://${host}`;
+  await setDomainNamespace(domainUrl, namespaceId);
+  await setDomainScriptName(domainUrl, scriptName);
+  await setWorkerVersion(domainUrl, WORKER_SCRIPT_VERSION);
 
   let dns: ProvisionResult["dns"] = "created";
   try {

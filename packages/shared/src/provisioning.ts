@@ -17,8 +17,15 @@ export const DEFAULT_SCRIPT_NAME = "hopgo";
 /** Compatibility date the deployed Worker is pinned to. */
 export const DEFAULT_COMPATIBILITY_DATE = "2026-06-01";
 
+/**
+ * Version of the embedded REDIRECT_WORKER_SCRIPT. Increment this whenever
+ * the script changes so the extension can detect and offer a Worker update.
+ */
+export const WORKER_SCRIPT_VERSION = "1";
+
 /** The redirect Worker uploaded to the user's account. Binding name: LINKS. */
-export const REDIRECT_WORKER_SCRIPT = `export default {
+export const REDIRECT_WORKER_SCRIPT = `// hopgo-version: 1
+export default {
   async fetch(request, env, ctx) {
     if (request.method !== "GET" && request.method !== "HEAD") {
       return new Response("Method not allowed\\n", { status: 405, headers: { allow: "GET, HEAD" } });

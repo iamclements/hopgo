@@ -1,11 +1,17 @@
-import type { CloudflareZone } from "@hopgo/shared";
+import { deployWorker, WORKER_SCRIPT_VERSION, type CloudflareZone } from "@hopgo/shared";
+import { cfFetch } from "./cf-fetch.js";
 import { loadZones, provisionZone } from "./setup.js";
+import { currentConnection } from "./session.js";
 import {
   getActiveDomain,
+  getDomainNamespaces,
+  getDomainScriptNames,
   getDomains,
+  getWorkerVersions,
   setActiveDomain,
   setDomains,
   setShortDomain,
+  setWorkerVersion,
 } from "./storage.js";
 import { normalizeBaseUrl } from "./util.js";
 
@@ -26,7 +32,13 @@ function setMsg(text: string, isError = false): void {
 let zones: CloudflareZone[] = [];
 
 async function renderSavedDomains(): Promise<void> {
-  const [domains, active] = await Promise.all([getDomains(), getActiveDomain()]);
+  const [domains, active, versions, scriptNames, namespaces] = await Promise.all([
+    getDomains(),
+    getActiveDomain(),
+    getWorkerVersions(),
+    getDomainScriptNames(),
+    getDomainNamespaces(),
+  ]);
   savedListEl.innerHTML = "";
   if (domains.length === 0) return;
   for (const d of domains) {
@@ -43,6 +55,51 @@ async function renderSavedDomains(): Promise<void> {
       setMsg(`Active domain set to ${d.replace(/^https?:\/\//, "")}.`);
     });
 
+    const storedVersion = versions[d];
+    const needsUpdate = storedVersion !== undefined && storedVersion !== WORKER_SCRIPT_VERSION;
+
+    if (needsUpdate) {
+      const badge = document.createElement("span");
+      badge.className = "update-badge";
+      badge.textContent = "Update available";
+
+      const updateBtn = document.createElement("button");
+      updateBtn.className = "saved-update";
+      updateBtn.textContent = "Update";
+      updateBtn.addEventListener("click", async () => {
+        const connection = await currentConnection();
+        if (!connection) {
+          setMsg("Sign in first.", true);
+          return;
+        }
+        const scriptName = scriptNames[d];
+        const namespaceId = namespaces[d] ?? connection.namespaceId;
+        if (!scriptName) {
+          setMsg("Cannot update: script name unknown. Re-deploy from the setup form.", true);
+          return;
+        }
+        updateBtn.disabled = true;
+        setMsg(`Updating Worker for ${d.replace(/^https?:\/\//, "")}...`);
+        try {
+          await deployWorker(cfFetch, connection.accessToken, {
+            accountId: connection.accountId,
+            namespaceId,
+            scriptName,
+          });
+          await setWorkerVersion(d, WORKER_SCRIPT_VERSION);
+          await renderSavedDomains();
+          setMsg(`Worker updated for ${d.replace(/^https?:\/\//, "")}.`);
+        } catch (err) {
+          setMsg(err instanceof Error ? err.message : "Update failed", true);
+          updateBtn.disabled = false;
+        }
+      });
+
+      row.append(label, badge, updateBtn);
+    } else {
+      row.append(label);
+    }
+
     const del = document.createElement("button");
     del.className = "saved-del";
     del.textContent = "Remove";
@@ -53,7 +110,7 @@ async function renderSavedDomains(): Promise<void> {
       await renderSavedDomains();
     });
 
-    row.append(label, del);
+    row.append(del);
     savedListEl.appendChild(row);
   }
 }

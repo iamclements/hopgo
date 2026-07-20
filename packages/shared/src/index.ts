@@ -43,6 +43,7 @@ export {
   provisionDomain,
   discoverDomains,
   REDIRECT_WORKER_SCRIPT,
+  WORKER_SCRIPT_VERSION,
   DEFAULT_SCRIPT_NAME,
   DEFAULT_COMPATIBILITY_DATE,
   type CloudflareZone,

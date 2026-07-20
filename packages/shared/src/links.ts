@@ -24,7 +24,11 @@ export async function linkExists(client: CloudflareKvClient, slug: string): Prom
 /** Create or overwrite a link. The slug is the KV key; the rest is the value. */
 export async function putLink(client: CloudflareKvClient, link: Link): Promise<void> {
   const { slug, ...record } = link;
-  await client.writeValue(slug, JSON.stringify(record));
+  await client.writeValue(
+    slug,
+    JSON.stringify(record),
+    record.expiresAt !== undefined ? { expiration: record.expiresAt } : undefined,
+  );
 }
 
 /** Delete a link and its click counter. */
@@ -54,7 +58,11 @@ export async function listLinks(
   options: { limit?: number; cursor?: string } = {},
 ): Promise<ListLinksResult> {
   const page = await client.listKeys({ limit: options.limit, cursor: options.cursor });
-  const slugs = page.keys.map((k) => k.name).filter((name) => !name.startsWith(CLICK_KEY_PREFIX));
+  const now = Math.floor(Date.now() / 1000);
+  const slugs = page.keys
+    .filter((k) => !k.name.startsWith(CLICK_KEY_PREFIX))
+    .filter((k) => k.expiration === undefined || k.expiration > now)
+    .map((k) => k.name);
 
   const links: Link[] = [];
   for (const slug of slugs) {

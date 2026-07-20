@@ -113,8 +113,16 @@ export class CloudflareKvClient {
   }
 
   /** Write a raw value. */
-  async writeValue(key: string, value: string): Promise<void> {
-    const res = await this.fetchImpl(this.namespacePath(`/values/${encodeURIComponent(key)}`), {
+  async writeValue(
+    key: string,
+    value: string,
+    options?: { expiration?: number },
+  ): Promise<void> {
+    let path = `/values/${encodeURIComponent(key)}`;
+    if (options?.expiration !== undefined) {
+      path += `?expiration=${options.expiration}`;
+    }
+    const res = await this.fetchImpl(this.namespacePath(path), {
       method: "PUT",
       headers: { ...(await this.authHeaders()), "content-type": "text/plain" },
       body: value,

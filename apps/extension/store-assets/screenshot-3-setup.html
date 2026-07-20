@@ -1,0 +1,195 @@
+<!doctype html>
+<!--
+  Screenshot 3: One-click setup (1280x800).
+  Open in Chrome, set window to exactly 1280x800, screenshot.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        width: 1280px;
+        height: 800px;
+        overflow: hidden;
+        background: #07090e;
+        font-family: "Space Grotesk", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+        background-size: 72px 72px;
+        display: flex;
+        justify-content: center;
+        padding: 40px 0;
+      }
+
+      .page { width: 560px; }
+
+      /* Header */
+      .head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 36px;
+      }
+      .wordmark { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: #eef1f6; }
+      .wordmark .go { color: #3b82f6; }
+      .head-sub {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #4a5468;
+        margin-left: 4px;
+      }
+
+      /* Callout */
+      .callout {
+        background: rgba(37,99,235,0.08);
+        border: 1px solid rgba(59,130,246,0.25);
+        border-radius: 8px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #8a93a3;
+      }
+      .callout strong { display: block; font-size: 13px; font-weight: 600; color: #eef1f6; margin-bottom: 8px; }
+      .callout ul { margin: 0; padding-left: 18px; }
+      .callout li { margin-bottom: 4px; }
+      .callout a { color: #3b82f6; }
+
+      /* Card */
+      .card {
+        background: #0d111a;
+        border: 1px solid #1b2230;
+        border-radius: 8px;
+        padding: 24px 24px 20px;
+        margin-bottom: 14px;
+      }
+      .card-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 4px; }
+      .card-desc { font-size: 13px; color: #8a93a3; line-height: 1.55; margin-bottom: 18px; }
+
+      label {
+        display: block;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #6b7a96;
+        margin-bottom: 6px;
+      }
+
+      .domain-row { display: flex; gap: 8px; align-items: center; }
+      .domain-row input { width: 90px; flex-shrink: 0; }
+      .domain-sep { font-family: "JetBrains Mono", monospace; font-size: 12px; color: #4a5468; flex-shrink: 0; }
+      .domain-row select { flex: 1; min-width: 0; }
+
+      input, select {
+        width: 100%;
+        padding: 9px 12px;
+        background: #141822;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 6px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #eef1f6;
+        outline: none;
+        appearance: none;
+      }
+
+      .btn {
+        padding: 9px 16px;
+        border-radius: 6px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-primary { background: #2563eb; color: #fff; }
+      .btn-ghost {
+        background: rgba(255,255,255,0.06);
+        color: #8a93a3;
+        border: 1px solid rgba(255,255,255,0.1);
+      }
+
+      .hint { font-size: 12px; color: #4a5468; margin-top: 6px; line-height: 1.5; }
+
+      /* Workers.dev card accent */
+      .card.workers-card {
+        border-color: rgba(59,130,246,0.2);
+        background: rgba(37,99,235,0.04);
+      }
+      .card.workers-card .card-title { color: #eef1f6; }
+
+      /* Success chip */
+      .success-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(74,222,128,0.1);
+        border: 1px solid rgba(74,222,128,0.25);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: #4ade80;
+        margin-bottom: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="head">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
+          <circle cx="10" cy="48" r="7" fill="#3b82f6"/>
+          <path d="M10 48 Q 32 4 54 48" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="54" cy="48" r="7" fill="#3b82f6"/>
+        </svg>
+        <span class="wordmark">hop<span class="go">go</span></span>
+        <span class="head-sub">Settings</span>
+      </div>
+
+      <!-- Callout -->
+      <div class="callout">
+        <strong>Before you start</strong>
+        <ul>
+          <li>You need a free <a href="#">Cloudflare account</a> (no credit card required).</li>
+          <li>No domain? Use the free <strong>workers.dev</strong> path below — no setup needed.</li>
+          <li>Have a domain on Cloudflare? Use the one-click setup below.</li>
+        </ul>
+      </div>
+
+      <!-- Workers.dev card -->
+      <div class="card workers-card">
+        <div class="card-title">Free setup — no domain required</div>
+        <div class="card-desc">Deploy to your free Cloudflare workers.dev subdomain. No custom domain, no DNS setup. Sign in via the popup first.</div>
+        <button class="btn btn-primary">Deploy to workers.dev</button>
+        <div class="hint" style="margin-top: 8px">Your links will be served from <em>hopgo.&lt;your-subdomain&gt;.workers.dev</em>. Every Cloudflare account includes this for free.</div>
+      </div>
+
+      <!-- Custom domain card -->
+      <div class="card">
+        <div class="card-title">Custom domain setup</div>
+        <div class="card-desc">Deploy the redirect Worker to a Cloudflare domain you own. Sign in via the popup first.</div>
+        <label>Subdomain</label>
+        <div class="domain-row">
+          <input type="text" value="go" />
+          <span class="domain-sep">.</span>
+          <select><option>acme.dev</option><option>acme.com</option></select>
+          <button class="btn btn-ghost">Load</button>
+          <button class="btn btn-primary">Deploy</button>
+        </div>
+        <div class="hint">Short links served from go.acme.dev. A proxied DNS record is created automatically.</div>
+      </div>
+    </div>
+  </body>
+</html>

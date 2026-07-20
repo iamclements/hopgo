@@ -1,0 +1,341 @@
+<!doctype html>
+<!--
+  Screenshot 2: Link manager dashboard (1280x800).
+  Open in Chrome, set window to exactly 1280x800, screenshot.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        width: 1280px;
+        height: 800px;
+        overflow: hidden;
+        background: #07090e;
+        font-family: "Space Grotesk", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+        background-size: 72px 72px;
+      }
+
+      /* Topbar */
+      .topbar {
+        height: 56px;
+        background: rgba(7,9,14,0.95);
+        border-bottom: 1px solid #1b2230;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 28px;
+      }
+      .logo { display: flex; align-items: center; gap: 8px; }
+      .wordmark { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; color: #eef1f6; }
+      .wordmark .go { color: #3b82f6; }
+      .topbar-sep { width: 1px; height: 20px; background: #1b2230; }
+      .topbar-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #4a5468;
+      }
+      .domain-sel {
+        background: #141822;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 6px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #3b82f6;
+        padding: 5px 10px;
+      }
+      .topbar-spacer { flex: 1; }
+
+      /* Toolbar */
+      .toolbar {
+        padding: 14px 28px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .search-wrap {
+        position: relative;
+        flex: 1;
+        max-width: 360px;
+      }
+      .search-icon {
+        position: absolute;
+        left: 10px; top: 50%;
+        transform: translateY(-50%);
+        color: #4a5468;
+      }
+      .search-input {
+        width: 100%;
+        padding: 8px 12px 8px 32px;
+        background: #0d111a;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 6px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #8a93a3;
+      }
+      .sort-sel {
+        padding: 8px 12px;
+        background: #0d111a;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 6px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: #8a93a3;
+      }
+      .toolbar-spacer { flex: 1; }
+      .count {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: #4a5468;
+      }
+
+      /* Table */
+      .table-wrap { padding: 0 28px 20px; }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #1b2230;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      thead th {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #4a5468;
+        font-weight: 500;
+        padding: 10px 14px;
+        background: #0d111a;
+        border-bottom: 1px solid #1b2230;
+        text-align: left;
+        white-space: nowrap;
+      }
+      thead th:first-child { width: 36px; padding-left: 16px; }
+      thead th:last-child { width: 80px; text-align: right; }
+      thead th.right { text-align: right; }
+
+      tbody tr { background: #0d111a; }
+      tbody tr:nth-child(even) { background: rgba(255,255,255,0.01); }
+      tbody tr.selected { background: rgba(37,99,235,0.06); }
+      tbody td {
+        padding: 11px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+        font-size: 13px;
+        vertical-align: middle;
+      }
+      tbody tr:last-child td { border-bottom: none; }
+      td:first-child { padding-left: 16px; width: 36px; }
+
+      .td-slug {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #eef1f6;
+        white-space: nowrap;
+      }
+      .td-slug .host { color: #6b7a96; }
+      .td-slug strong { color: #3b82f6; }
+      .td-dest {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: #8a93a3;
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .td-clicks {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #8a93a3;
+        text-align: right;
+      }
+      .td-expiry {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: #6b7a96;
+        width: 120px;
+      }
+      .td-expiry.expiring { color: #fbbf24; }
+      .td-actions { width: 80px; text-align: right; }
+      .icon-btn {
+        background: none;
+        border: none;
+        padding: 3px 5px;
+        border-radius: 4px;
+        color: #4a5468;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+      }
+      .icon-btn.copy:hover { color: #3b82f6; }
+      .icon-btn.del:hover { color: #f87171; }
+
+      /* Bulk bar */
+      .bulk-bar {
+        padding: 10px 28px;
+        background: rgba(37,99,235,0.08);
+        border-bottom: 1px solid rgba(59,130,246,0.2);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 0;
+      }
+      .bulk-label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 12px;
+        color: #3b82f6;
+        flex: 1;
+      }
+      .btn-danger {
+        padding: 6px 14px;
+        background: rgba(248,113,113,0.12);
+        color: #f87171;
+        border: 1px solid rgba(248,113,113,0.25);
+        border-radius: 6px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-ghost {
+        padding: 6px 14px;
+        background: rgba(255,255,255,0.05);
+        color: #8a93a3;
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 6px;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      input[type=checkbox] { accent-color: #3b82f6; cursor: pointer; width: 14px; height: 14px; }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="logo">
+        <svg width="22" height="22" viewBox="0 0 64 64" fill="none">
+          <circle cx="10" cy="48" r="7" fill="#3b82f6"/>
+          <path d="M10 48 Q 32 4 54 48" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="54" cy="48" r="7" fill="#3b82f6"/>
+        </svg>
+        <span class="wordmark">hop<span class="go">go</span></span>
+      </div>
+      <div class="topbar-sep"></div>
+      <span class="topbar-label">Link Manager</span>
+      <select class="domain-sel">
+        <option>go.acme.dev</option>
+      </select>
+      <div class="topbar-spacer"></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input class="search-input" placeholder="Search slug or URL..." readonly />
+      </div>
+      <select class="sort-sel">
+        <option>Newest first</option>
+      </select>
+      <div class="toolbar-spacer"></div>
+      <span class="count">7 links</span>
+    </div>
+
+    <!-- Bulk bar (2 selected) -->
+    <div class="bulk-bar">
+      <span class="bulk-label">2 selected</span>
+      <button class="btn-danger">Delete selected</button>
+      <button class="btn-ghost">Clear</button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap" style="margin-top:12px">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" /></th>
+            <th>Slug</th>
+            <th>Destination</th>
+            <th class="right">Clicks</th>
+            <th>Expires</th>
+            <th style="text-align:right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="selected">
+            <td><input type="checkbox" checked /></td>
+            <td class="td-slug"><span class="host">go.acme.dev/</span><strong>launch</strong></td>
+            <td class="td-dest">acme.com/blog/announcing-acme-v3</td>
+            <td class="td-clicks">248</td>
+            <td class="td-expiry">—</td>
+            <td class="td-actions">
+              <button class="icon-btn copy"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="icon-btn del"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td class="td-slug"><span class="host">go.acme.dev/</span><strong>api-intro</strong></td>
+            <td class="td-dest">docs.acme.com/api/v3/getting-started/introduction</td>
+            <td class="td-clicks">91</td>
+            <td class="td-expiry">—</td>
+            <td class="td-actions">
+              <button class="icon-btn copy"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="icon-btn del"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+            </td>
+          </tr>
+          <tr class="selected">
+            <td><input type="checkbox" checked /></td>
+            <td class="td-slug"><span class="host">go.acme.dev/</span><strong>pricing</strong></td>
+            <td class="td-dest">acme.com/pricing</td>
+            <td class="td-clicks">184</td>
+            <td class="td-expiry expiring">2026-08-01</td>
+            <td class="td-actions">
+              <button class="icon-btn copy"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="icon-btn del"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td class="td-slug"><span class="host">go.acme.dev/</span><strong>demo</strong></td>
+            <td class="td-dest">calendly.com/acme/demo-30min</td>
+            <td class="td-clicks">34</td>
+            <td class="td-expiry">—</td>
+            <td class="td-actions">
+              <button class="icon-btn copy"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="icon-btn del"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+            </td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td class="td-slug"><span class="host">go.acme.dev/</span><strong>status</strong></td>
+            <td class="td-dest">status.acme.com</td>
+            <td class="td-clicks">12</td>
+            <td class="td-expiry">—</td>
+            <td class="td-actions">
+              <button class="icon-btn copy"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+              <button class="icon-btn del"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

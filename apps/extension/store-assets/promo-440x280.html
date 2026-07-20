@@ -1,0 +1,153 @@
+<!doctype html>
+<!--
+  Small promotional tile (440x280).
+  Open in Chrome, set window to exactly 440x280, screenshot.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        width: 440px;
+        height: 280px;
+        overflow: hidden;
+        background: #07090e;
+        font-family: "Space Grotesk", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .tile {
+        width: 440px;
+        height: 280px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 44px;
+      }
+
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+        background-size: 44px 44px;
+      }
+
+      .glow {
+        position: absolute;
+        right: -60px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 320px;
+        height: 320px;
+        background: radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 65%);
+      }
+
+      .mark {
+        position: absolute;
+        right: -30px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.07;
+      }
+
+      .content { position: relative; z-index: 1; }
+
+      .label {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #3b82f6;
+        margin-bottom: 14px;
+      }
+
+      .lockup {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .wordmark {
+        font-size: 52px;
+        font-weight: 700;
+        letter-spacing: -0.035em;
+        color: #eef1f6;
+        line-height: 1;
+      }
+      .wordmark .go { color: #3b82f6; }
+
+      .tagline {
+        font-size: 15px;
+        font-weight: 500;
+        color: #eef1f6;
+        line-height: 1.35;
+        margin-bottom: 10px;
+      }
+
+      .sub {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        color: #4a5468;
+        letter-spacing: 0.04em;
+      }
+
+      .pill-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 16px;
+      }
+      .pill {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 10px;
+        letter-spacing: 0.06em;
+        color: #6b7a96;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 3px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="tile">
+      <div class="grid"></div>
+      <div class="glow"></div>
+      <div class="mark">
+        <svg width="280" height="280" viewBox="0 0 64 64" fill="none">
+          <circle cx="10" cy="48" r="7" fill="#3b82f6"/>
+          <path d="M10 48 Q 32 4 54 48" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+          <circle cx="54" cy="48" r="7" fill="#3b82f6"/>
+        </svg>
+      </div>
+      <div class="content">
+        <div class="label">Chrome Extension</div>
+        <div class="lockup">
+          <svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="filter:drop-shadow(0 0 14px rgba(59,130,246,0.5));flex-shrink:0">
+            <circle cx="10" cy="48" r="7" fill="#3b82f6"/>
+            <path d="M10 48 Q 32 4 54 48" stroke="#3b82f6" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="54" cy="48" r="7" fill="#3b82f6"/>
+          </svg>
+          <span class="wordmark">hop<span class="go">go</span></span>
+        </div>
+        <div class="tagline">Your links. Your domain.<br/>Nothing to host.</div>
+        <div class="sub">Runs on your own Cloudflare account.</div>
+        <div class="pill-row">
+          <span class="pill">Free</span>
+          <span class="pill">Open source</span>
+          <span class="pill">MIT</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

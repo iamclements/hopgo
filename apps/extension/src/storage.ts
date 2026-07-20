@@ -51,6 +51,28 @@ export async function setDomainNamespace(domain: string, namespaceId: string): P
   await chrome.storage.local.set({ domainNamespaces: { ...existing, [domain]: namespaceId } });
 }
 
+/** Per-domain Worker script names, keyed by domain URL. */
+export async function getDomainScriptNames(): Promise<Record<string, string>> {
+  const { domainScriptNames } = await chrome.storage.local.get("domainScriptNames");
+  return (domainScriptNames as Record<string, string>) ?? {};
+}
+
+export async function setDomainScriptName(domain: string, scriptName: string): Promise<void> {
+  const existing = await getDomainScriptNames();
+  await chrome.storage.local.set({ domainScriptNames: { ...existing, [domain]: scriptName } });
+}
+
+/** Per-domain deployed Worker version, keyed by domain URL. */
+export async function getWorkerVersions(): Promise<Record<string, string>> {
+  const { workerVersions } = await chrome.storage.local.get("workerVersions");
+  return (workerVersions as Record<string, string>) ?? {};
+}
+
+export async function setWorkerVersion(domain: string, version: string): Promise<void> {
+  const existing = await getWorkerVersions();
+  await chrome.storage.local.set({ workerVersions: { ...existing, [domain]: version } });
+}
+
 /** All saved short-link domains, in the order they were added. */
 export async function getDomains(): Promise<string[]> {
   const { domains } = await chrome.storage.local.get("domains");

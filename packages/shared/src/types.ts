@@ -20,6 +20,8 @@ export interface LinkRecord {
   tenantId: string;
   /** ISO 8601 creation timestamp. */
   createdAt: string;
+  /** Unix timestamp (seconds) after which the link expires. KV handles deletion automatically. */
+  expiresAt?: number;
 }
 
 /** A link plus its slug, as returned by the control-plane API. */

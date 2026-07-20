@@ -73,6 +73,13 @@ export async function ensureNamespace(
   });
   const body = (await res.json().catch(() => null)) as Envelope<{ id: string }> | null;
   if (!res.ok || !body?.success) {
+    const limitExceeded = body?.errors?.some((e) => e.code === 10026);
+    if (limitExceeded) {
+      throw new Error(
+        "Cloudflare KV namespace limit reached (100 max). " +
+          "Delete unused namespaces at dash.cloudflare.com/workers-and-pages/kv.",
+      );
+    }
     throw new CloudflareApiError("Failed to create KV namespace", res.status, body?.errors);
   }
   return body.result.id;

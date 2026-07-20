@@ -342,7 +342,9 @@ export async function getWorkersDotDevSubdomain(
   const res = await fetchImpl(`${CF_API}/accounts/${accountId}/workers/subdomain`, {
     headers: authHeader(token),
   });
-  const body = (await res.json().catch(() => null)) as Envelope<{ subdomain: string } | null> | null;
+  const body = (await res.json().catch(() => null)) as Envelope<{
+    subdomain: string;
+  } | null> | null;
   if (!res.ok || !body?.success) return null;
   return body.result?.subdomain ?? null;
 }
@@ -364,11 +366,7 @@ export async function enableWorkersDotDevRoute(
   );
   const body = (await res.json().catch(() => null)) as Envelope<unknown> | null;
   if (!res.ok || !body?.success) {
-    throw new CloudflareApiError(
-      "Failed to enable workers.dev route",
-      res.status,
-      body?.errors,
-    );
+    throw new CloudflareApiError("Failed to enable workers.dev route", res.status, body?.errors);
   }
 }
 

@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hopgo - Link Manager</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #07090e;
+        --surface: #0d111a;
+        --surface-2: #141822;
+        --border: #1b2230;
+        --text: #eef1f6;
+        --text-muted: #8a93a3;
+        --text-dim: #6b7a96;
+        --text-faint: #4a5468;
+        --blue: #2563eb;
+        --blue-bright: #3b82f6;
+        --red: #f87171;
+        --green: #4ade80;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+        --sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--sans);
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+        background-size: 72px 72px;
+      }
+
+      /* ── Topbar ── */
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(7, 9, 14, 0.92);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+        padding: 0 28px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        height: 56px;
+      }
+
+      .topbar-logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+        text-decoration: none;
+      }
+
+      .wordmark {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text);
+      }
+
+      .wordmark .go {
+        color: var(--blue-bright);
+      }
+
+      .topbar-sep {
+        width: 1px;
+        height: 20px;
+        background: var(--border);
+        flex-shrink: 0;
+      }
+
+      .topbar-title {
+        font-family: var(--mono);
+        font-size: 11px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        flex-shrink: 0;
+      }
+
+      .topbar-domain {
+        flex-shrink: 0;
+      }
+
+      .domain-select {
+        background: var(--surface-2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--blue-bright);
+        padding: 5px 10px;
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+      }
+
+      .domain-select:focus {
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+
+      .topbar-spacer {
+        flex: 1;
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* ── Toolbar ── */
+      .toolbar {
+        padding: 16px 28px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .search-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+        max-width: 400px;
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-faint);
+        pointer-events: none;
+      }
+
+      .search-input {
+        width: 100%;
+        padding: 8px 12px 8px 32px;
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+
+      .search-input:focus {
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+
+      .search-input::placeholder {
+        color: var(--text-faint);
+      }
+
+      .sort-select {
+        padding: 8px 12px;
+        background: var(--surface);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-muted);
+        outline: none;
+        cursor: pointer;
+        appearance: none;
+      }
+
+      .sort-select:focus {
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+
+      .toolbar-spacer {
+        flex: 1;
+      }
+
+      .count-label {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-faint);
+        white-space: nowrap;
+      }
+
+      /* ── Bulk bar (shown when items selected) ── */
+      .bulk-bar {
+        display: none;
+        padding: 10px 28px;
+        background: rgba(37, 99, 235, 0.08);
+        border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        align-items: center;
+        gap: 12px;
+      }
+
+      .bulk-bar.visible {
+        display: flex;
+      }
+
+      .bulk-label {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--blue-bright);
+        flex: 1;
+      }
+
+      /* ── Buttons ── */
+      .btn {
+        padding: 7px 14px;
+        border-radius: 6px;
+        font-family: var(--sans);
+        font-size: 12px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+
+      .btn-primary {
+        background: var(--blue);
+        color: #fff;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      .btn-danger {
+        background: rgba(248, 113, 113, 0.12);
+        color: var(--red);
+        border: 1px solid rgba(248, 113, 113, 0.25);
+      }
+
+      .btn-danger:hover:not(:disabled) {
+        background: rgba(248, 113, 113, 0.2);
+      }
+
+      .btn-ghost {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-muted);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+      }
+
+      .btn-ghost:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.09);
+      }
+
+      /* ── Table ── */
+      .table-wrap {
+        padding: 0 28px 28px;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .table th {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        font-weight: 500;
+        padding: 10px 14px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        white-space: nowrap;
+      }
+
+      .table th.th-check {
+        width: 36px;
+        padding: 10px 14px 10px 16px;
+      }
+
+      .table th.th-actions {
+        width: 80px;
+        text-align: right;
+      }
+
+      .table td {
+        padding: 11px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        vertical-align: middle;
+        font-size: 13px;
+      }
+
+      .table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .table tbody tr {
+        background: var(--surface);
+        transition: background 0.1s;
+      }
+
+      .table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .table tbody tr.selected {
+        background: rgba(37, 99, 235, 0.06);
+      }
+
+      /* ── Cells ── */
+      .td-check {
+        width: 36px;
+        padding: 11px 14px 11px 16px !important;
+      }
+
+      .td-slug {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--blue-bright);
+        white-space: nowrap;
+      }
+
+      .td-dest {
+        max-width: 260px;
+      }
+
+      .dest-text {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-muted);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+        max-width: 260px;
+      }
+
+      .td-clicks {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text-muted);
+        white-space: nowrap;
+        width: 60px;
+        text-align: right;
+      }
+
+      .td-expiry {
+        width: 150px;
+      }
+
+      .expiry-input {
+        background: transparent;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text-muted);
+        padding: 3px 6px;
+        cursor: pointer;
+        width: 130px;
+        transition: border-color 0.15s;
+        color-scheme: dark;
+      }
+
+      .expiry-input:hover {
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .expiry-input:focus {
+        outline: none;
+        border-color: rgba(59, 130, 246, 0.4);
+        color: var(--text);
+      }
+
+      .expiry-input.expiring-soon {
+        color: #fbbf24;
+      }
+
+      .td-actions {
+        width: 80px;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px 6px;
+        border-radius: 4px;
+        color: var(--text-faint);
+        transition:
+          color 0.15s,
+          background 0.15s;
+        vertical-align: middle;
+      }
+
+      .icon-btn:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .icon-btn.copy-btn:hover {
+        color: var(--blue-bright);
+      }
+
+      .icon-btn.del-btn:hover {
+        color: var(--red);
+        background: rgba(248, 113, 113, 0.08);
+      }
+
+      /* ── Checkboxes ── */
+      input[type="checkbox"] {
+        width: 14px;
+        height: 14px;
+        accent-color: var(--blue-bright);
+        cursor: pointer;
+      }
+
+      /* ── Status rows ── */
+      .empty-row td {
+        text-align: center;
+        padding: 40px 14px;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text-faint);
+      }
+
+      /* ── Load more ── */
+      .load-more-wrap {
+        padding: 0 28px 16px;
+        display: flex;
+        justify-content: center;
+      }
+
+      /* ── Status bar ── */
+      .status-bar {
+        font-family: var(--mono);
+        font-size: 12px;
+        padding: 10px 28px;
+        color: var(--text-muted);
+        min-height: 36px;
+        display: none;
+      }
+
+      .status-bar.visible {
+        display: block;
+      }
+
+      .status-bar.error {
+        color: var(--red);
+      }
+
+      .status-bar.success {
+        color: var(--green);
+      }
+
+      /* ── Settings card ── */
+      .settings-section {
+        padding: 0 28px 60px;
+      }
+
+      .settings-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 24px 24px 20px;
+        max-width: 560px;
+      }
+
+      .settings-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        letter-spacing: -0.01em;
+      }
+
+      .settings-desc {
+        font-size: 12px;
+        color: var(--text-muted);
+        line-height: 1.55;
+        margin-bottom: 16px;
+      }
+
+      .settings-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .settings-input {
+        flex: 1;
+        padding: 8px 12px;
+        background: var(--surface-2);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+
+      .settings-input:focus {
+        border-color: rgba(59, 130, 246, 0.4);
+      }
+
+      .settings-input::placeholder {
+        color: var(--text-faint);
+      }
+
+      /* ── Spinner ── */
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .spinner {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        vertical-align: -2px;
+        margin-right: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar -->
+    <header class="topbar">
+      <a class="topbar-logo" href="#" aria-label="Hopgo">
+        <svg width="22" height="22" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <circle cx="10" cy="48" r="7" fill="#3b82f6" />
+          <path d="M10 48 Q 32 4 54 48" stroke="#3b82f6" stroke-width="8" stroke-linecap="round" />
+          <circle cx="54" cy="48" r="7" fill="#3b82f6" />
+        </svg>
+        <span class="wordmark">hop<span class="go">go</span></span>
+      </a>
+      <div class="topbar-sep"></div>
+      <span class="topbar-title">Link Manager</span>
+      <div class="topbar-domain">
+        <select class="domain-select" id="domainSelect" aria-label="Active domain"></select>
+      </div>
+      <div class="topbar-spacer"></div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg
+          class="search-icon"
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="M21 21l-4.35-4.35" />
+        </svg>
+        <input
+          class="search-input"
+          id="search"
+          type="search"
+          placeholder="Search slug or URL..."
+          autocomplete="off"
+        />
+      </div>
+      <select class="sort-select" id="sort" aria-label="Sort order">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="clicks-desc">Most clicks</option>
+        <option value="clicks-asc">Fewest clicks</option>
+      </select>
+      <div class="toolbar-spacer"></div>
+      <span class="count-label" id="countLabel"></span>
+    </div>
+
+    <!-- Bulk action bar -->
+    <div class="bulk-bar" id="bulkBar">
+      <span class="bulk-label" id="bulkLabel">0 selected</span>
+      <button class="btn btn-danger" id="bulkDelete">Delete selected</button>
+      <button class="btn btn-ghost" id="bulkClear">Clear</button>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar" id="statusBar"></div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="table" id="table">
+        <thead>
+          <tr>
+            <th class="th-check">
+              <input type="checkbox" id="selectAll" aria-label="Select all" />
+            </th>
+            <th>Slug</th>
+            <th>Destination</th>
+            <th style="text-align: right">Clicks</th>
+            <th>Expires</th>
+            <th class="th-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr class="empty-row">
+            <td colspan="6">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Load more -->
+    <div class="load-more-wrap" id="loadMoreWrap" style="display: none">
+      <button class="btn btn-ghost" id="loadMore">Load more</button>
+    </div>
+
+    <!-- Settings -->
+    <div class="settings-section">
+      <div class="settings-card">
+        <div class="settings-title">404 redirect</div>
+        <div class="settings-desc">
+          When a visitor follows an unknown short link, redirect them here instead of showing a
+          plain "not found" page. Leave blank to show the default page.
+        </div>
+        <div class="settings-row">
+          <input
+            class="settings-input"
+            id="redirect404Input"
+            type="url"
+            placeholder="https://yourdomain.com"
+            autocomplete="off"
+          />
+          <button class="btn btn-primary" id="save404">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/dashboard.ts"></script>
+  </body>
+</html>

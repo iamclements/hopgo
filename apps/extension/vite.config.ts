@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         popup: resolve(import.meta.dirname, "popup.html"),
         options: resolve(import.meta.dirname, "options.html"),
+        dashboard: resolve(import.meta.dirname, "dashboard.html"),
         background: resolve(import.meta.dirname, "src/background.ts"),
       },
       output: {

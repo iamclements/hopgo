@@ -368,6 +368,10 @@ $<HTMLButtonElement>("settings").addEventListener("click", () => {
   chrome.runtime.openOptionsPage();
 });
 
+$<HTMLButtonElement>("openDashboard").addEventListener("click", () => {
+  void chrome.tabs.create({ url: chrome.runtime.getURL("dashboard.html") });
+});
+
 domainSelectEl.addEventListener("change", async () => {
   const selected = domainSelectEl.value;
   if (selected === "__add__") {

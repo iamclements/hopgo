@@ -25,6 +25,7 @@ export const HOPGO_OAUTH_SCOPES = [
   "workers-routes.write",
   "zone.read",
   "dns.write",
+  "offline_access",
 ] as const;
 
 /** Clock skew applied when deciding whether an access token is still usable. */

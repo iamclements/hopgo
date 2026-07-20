@@ -376,9 +376,26 @@
         <span class="head-sub">Settings</span>
       </div>
 
+      <!-- Free workers.dev path -->
+      <div class="card">
+        <div class="card-title">Free setup - no domain required</div>
+        <div class="card-desc">
+          Deploy to your free Cloudflare workers.dev subdomain. No custom domain, no DNS setup.
+          Sign in via the popup first.
+        </div>
+        <div class="field" style="margin-bottom: 0">
+          <button class="btn btn-primary" id="deployWorkersDev">Deploy to workers.dev</button>
+          <div class="hint" style="margin-top: 8px">
+            Your links will be served from
+            <em>hopgo.&lt;your-subdomain&gt;.workers.dev</em>. Every Cloudflare account includes
+            this for free.
+          </div>
+        </div>
+      </div>
+
       <!-- One-click domain setup -->
       <div class="card">
-        <div class="card-title">One-click domain setup</div>
+        <div class="card-title">Custom domain setup</div>
         <div class="card-desc">
           Deploy the Hopgo redirect Worker to a Cloudflare domain you own. Sign in via the popup
           first, then load your domains and deploy.

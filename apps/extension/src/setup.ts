@@ -8,12 +8,18 @@ import {
   ensureNamespace,
   listZones,
   provisionDomain,
+  provisionWorkersDotDevDomain,
   WORKER_SCRIPT_VERSION,
   type CloudflareZone,
 } from "@hopgo/shared";
 import { cfFetch } from "./cf-fetch.js";
 import { currentConnection } from "./session.js";
-import { setDomainNamespace, setDomainScriptName, setWorkerVersion } from "./storage.js";
+import {
+  setDomainNamespace,
+  setDomainScriptName,
+  setShortDomain,
+  setWorkerVersion,
+} from "./storage.js";
 
 export async function loadZones(): Promise<CloudflareZone[]> {
   const connection = await currentConnection();
@@ -74,4 +80,33 @@ export async function provisionZone(
   }
 
   return { shortDomain: `https://${host}`, host, dns };
+}
+
+/**
+ * Deploy the Worker to the account's free workers.dev subdomain. No zone or DNS
+ * needed - works on any Cloudflare account without a custom domain.
+ * Returns the resulting short domain URL (https://<script>.<sub>.workers.dev).
+ */
+export async function provisionWorkersDotDev(): Promise<string> {
+  const connection = await currentConnection();
+  if (!connection) {
+    throw new Error("Sign in with Cloudflare first (open the popup).");
+  }
+
+  const safeHost = "hopgo";
+  const namespaceId = await ensureNamespace(
+    cfFetch,
+    connection.accessToken,
+    connection.accountId,
+    "hopgo-links-workers-dev",
+  );
+  const shortDomain = await provisionWorkersDotDevDomain(cfFetch, connection.accessToken, {
+    accountId: connection.accountId,
+    namespaceId,
+    scriptName: safeHost,
+  });
+
+  await setDomainNamespace(shortDomain, namespaceId);
+  await setShortDomain(shortDomain);
+  return shortDomain;
 }

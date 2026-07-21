@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="180" viewBox="0 0 800 180">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="60%" r="50%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="180" fill="#07090e" rx="12"/>
+  <rect width="800" height="180" fill="url(#glow)" rx="12"/>
+
+  <!-- Subtle grid -->
+  <line x1="0" y1="60" x2="800" y2="60" stroke="white" stroke-opacity="0.03"/>
+  <line x1="0" y1="120" x2="800" y2="120" stroke="white" stroke-opacity="0.03"/>
+  <line x1="200" y1="0" x2="200" y2="180" stroke="white" stroke-opacity="0.03"/>
+  <line x1="400" y1="0" x2="400" y2="180" stroke="white" stroke-opacity="0.03"/>
+  <line x1="600" y1="0" x2="600" y2="180" stroke="white" stroke-opacity="0.03"/>
+
+  <!-- Logo mark -->
+  <g transform="translate(228, 48)">
+    <circle cx="0"  cy="60" r="10" fill="#3b82f6"/>
+    <path d="M0 60 Q 44 0 88 60"
+      stroke="#3b82f6" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <circle cx="88" cy="60" r="10" fill="#3b82f6"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text
+    x="352" y="114"
+    font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="72"
+    font-weight="700"
+    letter-spacing="-3"
+    fill="#eef1f6"
+  >hop<tspan fill="#3b82f6">go</tspan></text>
+
+  <!-- Tagline -->
+  <text
+    x="400" y="148"
+    font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="14"
+    fill="#4a5468"
+    text-anchor="middle"
+    letter-spacing="0.5"
+  >Your links. Your domain. Nothing to host.</text>
+</svg>

@@ -88,7 +88,10 @@ export function randomState(): string {
 }
 
 function authBase(config: OAuthConfig): string {
-  return (config.authBaseUrl ?? DEFAULT_AUTH_BASE).replace(/\/+$/, "");
+  const raw = config.authBaseUrl ?? DEFAULT_AUTH_BASE;
+  let end = raw.length;
+  while (end > 0 && raw[end - 1] === "/") end--;
+  return end === raw.length ? raw : raw.slice(0, end);
 }
 
 function scopeString(config: OAuthConfig): string {

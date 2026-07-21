@@ -54,8 +54,8 @@ const s1 = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800">
   <rect width="1280" height="800" fill="url(#glow1)"/>
 
   <!-- Grid -->
-  ${Array.from({length: 18}, (_, i) => `<line x1="${i*72}" y1="0" x2="${i*72}" y2="800" stroke="white" stroke-opacity="0.022"/>`).join("")}
-  ${Array.from({length: 12}, (_, i) => `<line x1="0" y1="${i*72}" x2="1280" y2="${i*72}" stroke="white" stroke-opacity="0.022"/>`).join("")}
+  ${Array.from({ length: 18 }, (_, i) => `<line x1="${i * 72}" y1="0" x2="${i * 72}" y2="800" stroke="white" stroke-opacity="0.022"/>`).join("")}
+  ${Array.from({ length: 12 }, (_, i) => `<line x1="0" y1="${i * 72}" x2="1280" y2="${i * 72}" stroke="white" stroke-opacity="0.022"/>`).join("")}
 
   <!-- Left: headline -->
   <text x="100" y="220" font-family="${FONT}" font-size="13" font-weight="500" letter-spacing="3" fill="${BLUE_BRIGHT}" text-anchor="start">CHROME EXTENSION</text>
@@ -116,13 +116,17 @@ const s1 = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800">
     ["launch", "acme.com/blog/announcing-acme-v3", "248"],
     ["pricing", "acme.com/pricing", "91"],
     ["demo", "calendly.com/acme/demo-30min", "34"],
-  ].map(([slug, dest, clicks], i) => `
+  ]
+    .map(
+      ([slug, dest, clicks], i) => `
     <circle cx="847" cy="${358 + i * 40}" r="3" fill="${BLUE}"/>
     <text x="858" y="${362 + i * 40}" font-family="${MONO}" font-size="10" fill="${TEXT}">go.acme.dev/<tspan fill="${BLUE_BRIGHT}">${slug}</tspan></text>
     <text x="858" y="${376 + i * 40}" font-family="${MONO}" font-size="9" fill="${FAINT}">${dest}</text>
     <text x="1152" y="${362 + i * 40}" font-family="${MONO}" font-size="10" fill="${FAINT}" text-anchor="end">${clicks}</text>
     <line x1="838" y1="${378 + i * 40}" x2="1162" y2="${378 + i * 40}" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-  `).join("")}
+  `,
+    )
+    .join("")}
 
   <!-- Footer -->
   <line x1="820" y1="516" x2="1180" y2="516" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
@@ -132,18 +136,18 @@ const s1 = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800">
 
 // ── Screenshot 2: Dashboard (1280x800) ────────────────────────────────────────
 const ROWS = [
-  ["launch",   "acme.com/blog/announcing-acme-v3",           "248", ""],
-  ["api-intro","docs.acme.com/api/v3/getting-started",       "91",  ""],
-  ["pricing",  "acme.com/pricing",                           "184", "2026-08-01"],
-  ["demo",     "calendly.com/acme/demo-30min",               "34",  ""],
-  ["status",   "status.acme.com",                            "12",  ""],
+  ["launch", "acme.com/blog/announcing-acme-v3", "248", ""],
+  ["api-intro", "docs.acme.com/api/v3/getting-started", "91", ""],
+  ["pricing", "acme.com/pricing", "184", "2026-08-01"],
+  ["demo", "calendly.com/acme/demo-30min", "34", ""],
+  ["status", "status.acme.com", "12", ""],
 ];
 
 const s2 = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800">
   <!-- Background -->
   <rect width="1280" height="800" fill="${BG}"/>
-  ${Array.from({length: 18}, (_, i) => `<line x1="${i*72}" y1="0" x2="${i*72}" y2="800" stroke="white" stroke-opacity="0.018"/>`).join("")}
-  ${Array.from({length: 12}, (_, i) => `<line x1="0" y1="${i*72}" x2="1280" y2="${i*72}" stroke="white" stroke-opacity="0.018"/>`).join("")}
+  ${Array.from({ length: 18 }, (_, i) => `<line x1="${i * 72}" y1="0" x2="${i * 72}" y2="800" stroke="white" stroke-opacity="0.018"/>`).join("")}
+  ${Array.from({ length: 12 }, (_, i) => `<line x1="0" y1="${i * 72}" x2="1280" y2="${i * 72}" stroke="white" stroke-opacity="0.018"/>`).join("")}
 
   <!-- Topbar -->
   <rect width="1280" height="56" fill="rgba(7,9,14,0.95)"/>
@@ -187,14 +191,14 @@ const s2 = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800">
     const selected = i === 0 || i === 2;
     const expiringColor = expiry ? "#fbbf24" : DIM;
     return `
-    <rect x="28" y="${y}" width="1224" height="50" fill="${selected ? 'rgba(37,99,235,0.06)' : (i % 2 === 1 ? 'rgba(255,255,255,0.01)' : SURFACE)}"/>
-    <line x1="28" y1="${y+50}" x2="1252" y2="${y+50}" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
-    <rect x="40" y="${y+18}" width="14" height="14" rx="2" fill="${selected ? BLUE : 'none'}" stroke="${selected ? BLUE : 'rgba(255,255,255,0.15)'}" stroke-width="1"/>
-    ${selected ? `<text x="47" y="${y+29}" font-family="${FONT}" font-size="10" fill="white" text-anchor="middle">✓</text>` : ''}
-    <text x="68" y="${y+29}" font-family="${MONO}" font-size="12" fill="${DIM}">go.acme.dev/<tspan fill="${BLUE_BRIGHT}">${slug}</tspan></text>
-    <text x="340" y="${y+29}" font-family="${MONO}" font-size="11" fill="${MUTED}">${dest}</text>
-    <text x="840" y="${y+29}" font-family="${MONO}" font-size="12" fill="${MUTED}" text-anchor="end">${clicks}</text>
-    <text x="900" y="${y+29}" font-family="${MONO}" font-size="11" fill="${expiringColor}">${expiry || "—"}</text>
+    <rect x="28" y="${y}" width="1224" height="50" fill="${selected ? "rgba(37,99,235,0.06)" : i % 2 === 1 ? "rgba(255,255,255,0.01)" : SURFACE}"/>
+    <line x1="28" y1="${y + 50}" x2="1252" y2="${y + 50}" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    <rect x="40" y="${y + 18}" width="14" height="14" rx="2" fill="${selected ? BLUE : "none"}" stroke="${selected ? BLUE : "rgba(255,255,255,0.15)"}" stroke-width="1"/>
+    ${selected ? `<text x="47" y="${y + 29}" font-family="${FONT}" font-size="10" fill="white" text-anchor="middle">✓</text>` : ""}
+    <text x="68" y="${y + 29}" font-family="${MONO}" font-size="12" fill="${DIM}">go.acme.dev/<tspan fill="${BLUE_BRIGHT}">${slug}</tspan></text>
+    <text x="340" y="${y + 29}" font-family="${MONO}" font-size="11" fill="${MUTED}">${dest}</text>
+    <text x="840" y="${y + 29}" font-family="${MONO}" font-size="12" fill="${MUTED}" text-anchor="end">${clicks}</text>
+    <text x="900" y="${y + 29}" font-family="${MONO}" font-size="11" fill="${expiringColor}">${expiry || "—"}</text>
     `;
   }).join("")}
 
@@ -213,8 +217,8 @@ const s3 = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800">
   </defs>
   <rect width="1280" height="800" fill="${BG}"/>
   <rect width="1280" height="800" fill="url(#glow3)"/>
-  ${Array.from({length: 18}, (_, i) => `<line x1="${i*72}" y1="0" x2="${i*72}" y2="800" stroke="white" stroke-opacity="0.022"/>`).join("")}
-  ${Array.from({length: 12}, (_, i) => `<line x1="0" y1="${i*72}" x2="1280" y2="${i*72}" stroke="white" stroke-opacity="0.022"/>`).join("")}
+  ${Array.from({ length: 18 }, (_, i) => `<line x1="${i * 72}" y1="0" x2="${i * 72}" y2="800" stroke="white" stroke-opacity="0.022"/>`).join("")}
+  ${Array.from({ length: 12 }, (_, i) => `<line x1="0" y1="${i * 72}" x2="1280" y2="${i * 72}" stroke="white" stroke-opacity="0.022"/>`).join("")}
 
   <!-- Left panel: headline -->
   <text x="100" y="200" font-family="${FONT}" font-size="13" font-weight="500" letter-spacing="3" fill="${BLUE_BRIGHT}">ONE-CLICK SETUP</text>
@@ -227,12 +231,16 @@ const s3 = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800">
     ["1", "Sign in with Cloudflare", "OAuth PKCE — no password stored"],
     ["2", "Pick a domain (or use workers.dev)", "Free subdomain needs no custom domain"],
     ["3", "Click Deploy", "Worker + DNS configured automatically"],
-  ].map(([n, title, sub], i) => `
+  ]
+    .map(
+      ([n, title, sub], i) => `
     <circle cx="116" cy="${498 + i * 60}" r="16" fill="${BLUE}" fill-opacity="0.2" stroke="${BLUE}" stroke-width="1"/>
     <text x="116" y="${504 + i * 60}" font-family="${FONT}" font-size="13" font-weight="700" fill="${BLUE_BRIGHT}" text-anchor="middle">${n}</text>
     <text x="144" y="${499 + i * 60}" font-family="${FONT}" font-size="15" font-weight="600" fill="${TEXT}">${title}</text>
     <text x="144" y="${517 + i * 60}" font-family="${FONT}" font-size="13" fill="${MUTED}">${sub}</text>
-  `).join("")}
+  `,
+    )
+    .join("")}
 
   <!-- Right panel: settings card -->
   <!-- Card shadow -->
@@ -294,8 +302,8 @@ const promo = `<svg xmlns="http://www.w3.org/2000/svg" width="440" height="280">
   </defs>
   <rect width="440" height="280" fill="${BG}"/>
   <rect width="440" height="280" fill="url(#g)"/>
-  ${Array.from({length: 10}, (_, i) => `<line x1="${i*48}" y1="0" x2="${i*48}" y2="280" stroke="white" stroke-opacity="0.025"/>`).join("")}
-  ${Array.from({length: 7}, (_, i) => `<line x1="0" y1="${i*48}" x2="440" y2="${i*48}" stroke="white" stroke-opacity="0.025"/>`).join("")}
+  ${Array.from({ length: 10 }, (_, i) => `<line x1="${i * 48}" y1="0" x2="${i * 48}" y2="280" stroke="white" stroke-opacity="0.025"/>`).join("")}
+  ${Array.from({ length: 7 }, (_, i) => `<line x1="0" y1="${i * 48}" x2="440" y2="${i * 48}" stroke="white" stroke-opacity="0.025"/>`).join("")}
 
   <!-- Faint big mark -->
   <g opacity="0.07">
@@ -331,8 +339,8 @@ const marquee = `<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="56
   </defs>
   <rect width="1400" height="560" fill="${BG}"/>
   <rect width="1400" height="560" fill="url(#mg)"/>
-  ${Array.from({length: 20}, (_, i) => `<line x1="${i*80}" y1="0" x2="${i*80}" y2="560" stroke="white" stroke-opacity="0.022"/>`).join("")}
-  ${Array.from({length: 8}, (_, i) => `<line x1="0" y1="${i*80}" x2="1400" y2="${i*80}" stroke="white" stroke-opacity="0.022"/>`).join("")}
+  ${Array.from({ length: 20 }, (_, i) => `<line x1="${i * 80}" y1="0" x2="${i * 80}" y2="560" stroke="white" stroke-opacity="0.022"/>`).join("")}
+  ${Array.from({ length: 8 }, (_, i) => `<line x1="0" y1="${i * 80}" x2="1400" y2="${i * 80}" stroke="white" stroke-opacity="0.022"/>`).join("")}
 
   <!-- Big faint mark -->
   <g opacity="0.06">
@@ -359,10 +367,14 @@ const marquee = `<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="56
     "Click tracking stored in your own KV",
     "Full link manager dashboard built into the extension",
     "Token auto-refresh — sign in once, stay signed in",
-  ].map((line, i) => `
+  ]
+    .map(
+      (line, i) => `
     <circle cx="100" cy="${366 + i * 34}" r="4" fill="${BLUE_BRIGHT}"/>
     <text x="118" y="${371 + i * 34}" font-family="${FONT}" font-size="16" fill="${TEXT}">${line}</text>
-  `).join("")}
+  `,
+    )
+    .join("")}
 
   <!-- Bottom bar -->
   <line x1="0" y1="504" x2="1400" y2="504" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
@@ -372,10 +384,10 @@ const marquee = `<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="56
 
 // ── Render all ─────────────────────────────────────────────────────────────────
 const images = [
-  ["screenshot-1-popup.png",     s1],
+  ["screenshot-1-popup.png", s1],
   ["screenshot-2-dashboard.png", s2],
-  ["screenshot-3-setup.png",     s3],
-  ["promo-440x280.png",          promo],
+  ["screenshot-3-setup.png", s3],
+  ["promo-440x280.png", promo],
   ["promo-marquee-1400x560.png", marquee],
 ];
 

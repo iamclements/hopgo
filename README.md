@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/images/banner.svg" alt="Hopgo" width="600">
+</p>
+
 Branded short links that run entirely on your own Cloudflare account. Install the Chrome extension, sign in with Cloudflare, and your links are served from your domain at Cloudflare's edge — no server, no container, nothing of yours ever touches a Hopgo machine.
 
 [![CI](https://github.com/iamclements/hopgo/actions/workflows/ci.yml/badge.svg)](https://github.com/iamclements/hopgo/actions/workflows/ci.yml)

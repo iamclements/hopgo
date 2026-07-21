@@ -14,6 +14,9 @@ export const RESERVED_SLUGS: ReadonlySet<string> = new Set(["favicon.ico", "robo
 /** Prefix under which the worker stores per-slug click counters in KV. */
 export const CLICK_KEY_PREFIX = "clicks:";
 
+/** KV keys reserved for system use — never treated as link slugs. */
+export const SYSTEM_KEYS: ReadonlySet<string> = new Set(["__404_redirect__"]);
+
 /** KV key holding the click count for a slug. */
 export function clickKey(slug: string): string {
   return `${CLICK_KEY_PREFIX}${slug}`;

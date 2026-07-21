@@ -5,7 +5,7 @@
  */
 
 import { CloudflareKvClient } from "./cloudflare.js";
-import { CLICK_KEY_PREFIX, clickKey } from "./slug.js";
+import { CLICK_KEY_PREFIX, SYSTEM_KEYS, clickKey } from "./slug.js";
 import type { Link, LinkRecord } from "./types.js";
 
 /** Read a single link by slug. Returns null when the slug is unknown. */
@@ -61,6 +61,7 @@ export async function listLinks(
   const now = Math.floor(Date.now() / 1000);
   const slugs = page.keys
     .filter((k) => !k.name.startsWith(CLICK_KEY_PREFIX))
+    .filter((k) => !SYSTEM_KEYS.has(k.name))
     .filter((k) => k.expiration === undefined || k.expiration > now)
     .map((k) => k.name);
 

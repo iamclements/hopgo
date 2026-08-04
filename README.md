@@ -80,7 +80,7 @@ Open the extension's Options (gear icon in the popup, or `chrome://extensions` â
 
 Click **Sign in with Cloudflare**. An OAuth consent screen opens on Cloudflare's own domain. Approve the minimal scope â€” Hopgo only asks for Workers Scripts, KV, and Zone read. Your token stays in the extension; it is never sent to a Hopgo server.
 
-> Tokens refresh silently in the background using the `offline_access` scope. You sign in once and stay signed in.
+> Cloudflare's self-managed OAuth clients don't issue refresh tokens, so there's no silent renewal: when your access token expires, sign in again from Options.
 
 ### Step 3: Deploy the redirect Worker
 

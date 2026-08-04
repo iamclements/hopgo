@@ -8,7 +8,7 @@ This file is updated only in release commits. Feature and fix PRs do not touch i
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-07-20
+## [0.1.0] - 2026-08-04
 
 ### Added
 
@@ -17,8 +17,6 @@ This file is updated only in release commits. Feature and fix PRs do not touch i
   configurable 404 redirect URL
 - **workers.dev path** - deploy to a free Cloudflare workers.dev subdomain with no
   custom domain required; setup card in options surfaces this before asking for a domain
-- **OAuth token auto-refresh** - tokens refresh silently in the background using the
-  `offline_access` scope; users stay signed in indefinitely after first login
 - **Link expiry** - `expiresAt` field on links maps to Cloudflare KV's native TTL;
   expired links are cleaned up automatically at the edge
 - **Worker version tracking** - deployed Worker version is stored per domain; options
@@ -36,3 +34,9 @@ This file is updated only in release commits. Feature and fix PRs do not touch i
   via the 404 redirect setting
 - "No zones found" error in options now directs users to the workers.dev path instead
   of leaving them stuck
+
+### Known limitations
+
+- Cloudflare's self-managed OAuth clients don't issue refresh tokens: access tokens are
+  not renewed silently, and you re-authenticate from Options once one expires. Fixed in
+  0.1.1 to stop requesting the unsupported `offline_access` scope.

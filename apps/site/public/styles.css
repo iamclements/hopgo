@@ -143,32 +143,6 @@ h2 {
   color: var(--text);
 }
 
-/* "Coming soon" badge on the Add to Chrome CTAs (store listing not live yet) */
-.soon {
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
-  white-space: nowrap;
-}
-.btn-primary[aria-disabled="true"],
-.nav-cta[aria-disabled="true"] {
-  cursor: default;
-}
-.btn-primary[aria-disabled="true"]:hover,
-.nav-cta[aria-disabled="true"]:hover {
-  transform: none;
-}
-.nav-cta .soon {
-  font-size: 9px;
-  padding: 2px 6px;
-}
-
 /* ── Nav ──────────────────────────────────────── */
 .nav {
   position: sticky;
@@ -887,7 +861,7 @@ details[open] .faq-answer {
 .footer-rule {
   max-width: var(--maxw);
   margin: 32px auto 0;
-  padding: 24px 40px;
+  padding: 24px var(--pad-x);
   border-top: 1px solid var(--border-faint);
   display: flex;
   justify-content: space-between;
@@ -1020,9 +994,8 @@ details[open] .faq-answer {
     max-width: 360px;
     margin: 0 auto;
   }
-  .grid-3,
-  .grid-2 {
-    grid-template-columns: 1fr;
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
   }
   .security-inner {
     flex-direction: column;
@@ -1037,8 +1010,24 @@ details[open] .faq-answer {
   }
 }
 
+@media (max-width: 640px) {
+  .grid-3,
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 520px) {
   .nav-gh {
     display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .nav-logo {
+    margin-right: 12px;
+  }
+  .nav-cta {
+    padding: 8px 12px;
   }
 }

@@ -24,7 +24,7 @@ The redirects run as a tiny Cloudflare Worker on your domain. The link data live
 
 Already have a Cloudflare account and Chrome? Here is the short path:
 
-1. Install the extension from the [Chrome Web Store](#) _(link lands here after review)_
+1. Install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/hopgo/hldildkeodeaabmlmgcfelcohfcegegb)
 2. Open the extension's Options and click **Sign in with Cloudflare**
 3. Choose a domain (or use the free workers.dev path — no domain required)
 4. Click **Deploy** — Hopgo provisions the Worker and KV namespace into your account
@@ -72,7 +72,7 @@ The extension also ships a full link manager dashboard that opens in a new tab d
 
 ### Step 1: Install the extension
 
-Install from the [Chrome Web Store](#) _(link lands here after review)_, or load it unpacked from source (see [Develop](#develop)).
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/hopgo/hldildkeodeaabmlmgcfelcohfcegegb), or load it unpacked from source (see [Develop](#develop)).
 
 ### Step 2: Sign in with Cloudflare
 

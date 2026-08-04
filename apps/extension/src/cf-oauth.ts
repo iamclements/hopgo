@@ -4,8 +4,8 @@
  * no backend and no CORS problem: host_permissions cover api.cloudflare.com and
  * the OAuth endpoints.
  *
- * offline_access is included in the scope set to request a refresh token so tokens
- * can be silently renewed without user interaction.
+ * Cloudflare self-managed OAuth clients do not support offline_access, so there
+ * is no refresh token. Users re-authenticate when the access token expires.
  */
 import {
   buildAuthorizeUrl,

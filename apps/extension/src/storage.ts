@@ -6,7 +6,7 @@ export interface Connection {
   accessToken: string;
   /** Epoch ms when the access token expires. */
   expiresAt: number;
-  /** Stored when Cloudflare returns one (offline_access scope). Used for silent renewal. */
+  /** Stored if Cloudflare ever returns one. Currently unused (no offline_access scope). */
   refreshToken?: string;
   accountId: string;
   namespaceId: string;

@@ -8,6 +8,28 @@ This file is updated only in release commits. Feature and fix PRs do not touch i
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-08-04
+
+### Fixed
+
+- Removed the `offline_access` OAuth scope: Cloudflare's self-managed OAuth clients don't
+  support it and never issued a refresh token, so requesting it was misleading. You now
+  re-authenticate from Options when your access token expires (see 0.1.0's known
+  limitations)
+- Dashboard and options pages now have responsive breakpoints; both previously had none
+  despite opening as ordinary resizable browser tabs. The link table switches to
+  horizontal scroll instead of squishing columns on narrow widths, and the domain setup
+  form wraps instead of overflowing
+- Marketing site (hopgo.co): decorative background glow elements could push page width
+  past the viewport on unusual aspect ratios (e.g. foldable cover/inner screens); now
+  clipped to `max-width: 100vw` with `overflow-x: hidden` applied to `html` as well as
+  `body`
+
+### Security
+
+- Bumped `@cloudflare/vitest-pool-workers` to clear a Dependabot alert on a vulnerable
+  transitive `sharp` version; dev-only (Workers test runner), never shipped to users
+
 ## [0.1.0] - 2026-08-04
 
 ### Added

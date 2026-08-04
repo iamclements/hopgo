@@ -400,6 +400,37 @@
         vertical-align: -2px;
         margin-right: 6px;
       }
+
+      html,
+      body {
+        overflow-x: hidden;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 640px) {
+        .page {
+          padding: 32px 20px 60px;
+        }
+        .domain-row {
+          flex-wrap: wrap;
+        }
+        .domain-row input {
+          flex: 0 0 70px;
+        }
+        .domain-row select {
+          flex: 1 1 100%;
+          order: 3;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .page {
+          padding: 24px 14px 48px;
+        }
+        .card {
+          padding: 20px 18px 18px;
+        }
+      }
     </style>
   </head>
   <body>

@@ -27,7 +27,7 @@ jobs:
 
       # Render the 1200x630 Open Graph image from its HTML source so the
       # published og:image always exists and stays in sync with the design.
-      - uses: browser-actions/setup-chrome@v1
+      - uses: browser-actions/setup-chrome@v2
         id: chrome
         with:
           install-dependencies: true

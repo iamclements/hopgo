@@ -19,13 +19,13 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@resvg/resvg-js": "^2.6.2",
-    "@types/node": "^26.1.1",
-    "eslint": "^10.6.0",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
     "eslint-config-prettier": "^10.1.8",
-    "playwright": "^1.62.1",
-    "prettier": "^3.8.4",
+    "playwright": "^1.65.0",
+    "prettier": "^3.9.10",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.62.0",
-    "vitest": "^4.1.10"
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^4.1.12"
   }
 }

@@ -13,9 +13,9 @@
     "@hopgo/shared": "workspace:*"
   },
   "devDependencies": {
-    "@types/chrome": "^0.2.2",
+    "@types/chrome": "^0.2.9",
     "typescript": "^6.0.3",
-    "vite": "^8.1.0",
-    "vitest": "^4.1.10"
+    "vite": "^8.3.6",
+    "vitest": "^4.1.12"
   }
 }
